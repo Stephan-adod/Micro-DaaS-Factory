@@ -1,0 +1,15 @@
+# Telemetry Configuration – Phase 3 Stabilization
+version: v3.1-refine-1
+loop: C
+streams:
+  - name: governance_health_stream
+    source: artefacts/health_records/
+    format: json
+    schema: artefacts/governance_health_index.schema.json
+    validation_runner: artefacts/screening_runner.py
+    review_window_days: 14
+schedule:
+  review_cycle: "P14D"
+  next_review: "2025-11-06"
+owner: stephan-adod
+status: active

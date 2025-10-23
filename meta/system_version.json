@@ -2,12 +2,13 @@
   "version": "v3.1",
   "target_version": "v3.1",
   "active": "v3.1",
-  "phase": "Recovery",
-  "phase_goal": "Health \u2265 0.5 & mROI \u2265 1.0 (Loop B aktiv)",
-  "health_score": 0.5,
+  "phase": "Stabilization",
+  "phase_goal": "Health Measurement Operational · Loop B active · Loop C recording",
+  "health_score": 0.7,
   "updated": "2025-10-23",
   "updated_at": "2025-10-23",
-  "policy_source": "meta/AI_First_Handbook.md",
+  "policy_source": "meta/AI_Native_Governance_Framework_v3.1.md",
+  "policy_hash": "c2a7b4e2",
   "pointers": {
     "core_docs": [
       "meta/AI_First_Handbook.md",
