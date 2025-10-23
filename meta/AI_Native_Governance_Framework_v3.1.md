@@ -147,3 +147,31 @@ AI Native Governance as Infrastructure bedeutet:
 das System lebt seine eigene Governance – prüfbar, wertbasiert und menschlich steuerbar.
 
 ---
+
+## 12 · Canonical Frontmatter (Contract)
+Alle Canonicals müssen die v3.1-Frontmatter-Felder führen (siehe meta/_fixtures/frontmatter_standard_v3.1.md). 
+Pflichtfelder: title, version, status, phase, owner, updated, review_due, retention, dependencies, linked_docs, layer, policy_source, policy_version.
+Nicht erfüllte Felder = PR-Blocker.
+
+## 13 · Change Propagation (Dependency Sync)
+- Jede Canonical pflegt `dependencies` (Upstream) und `linked_docs` (Downstream).
+- Sobald ein Upstream-Dokument `updated` > eigenes `updated` hat, gilt das Dokument als `stale`.
+- Stale-Signal: review_status = pending (bis Sync-PR gemerged).
+- PR-Template erfordert “Impacted Docs” Häkchen + Aktualisierung der betroffenen `linked_docs`.
+
+## 14 · Review & Retention Governance
+- review_due ≤ +90 Tage ab `updated`. Overdue = PR-Blocker.
+- retention: permanent | 12M | 24M | temp. Nach Ablauf → archivieren (nicht löschen).
+
+## 15 · Lessons Integration (Phase 2)
+- Eine Sammelstelle: docs/lessons_core_v3.1.md (optional in Phase 2).
+- Jede Phase-2-Änderung trägt 3 Learnings ein (What/Why/Impact), max. 5 Zeilen je Punkt.
+
+## 16 · Definition of Ready (Phase 2)
+Vor Start von Phase 2 müssen stehen:
+- CORE_INDEX vollständig
+- system_version.json zeigt auf alle Canonicals
+- Frontmatter v3.1 in allen Canonicals normalisiert
+- governance_manifest_schema_v3.1.json akzeptiert Frontmatter-Felder
+- PR-Template, CODEOWNERS, Commit-Conventions vorhanden
+
