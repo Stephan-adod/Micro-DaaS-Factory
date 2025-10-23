@@ -180,8 +180,32 @@ Vor Start von Phase 2 müssen stehen:
 - governance_manifest_schema_v3.1.json akzeptiert Frontmatter-Felder
 - PR-Template, CODEOWNERS, Commit-Conventions vorhanden
 
-+## 16a · Definition of Roles (Canonical)
+## 16a · Definition of Roles (Canonical)
 - **Owner:** strategisch & semantisch verantwortlich (Intent, Review, Lessons, Gates).
 - **AI Partner (ChatGPT):** semantische Übersetzung & Strukturbildung (Scaffold, Policy-Text).
 - **Codex App:** technische Implementierung (Writes, PR-Erstellung) unter CI/Schema-Guards.
 - **Repo (CI & Guards):** Governance-Validator (Schema, Links, Owner, Dates).
+
+## 17 · Codex Integration & Quality Control Loop (Phase 2+)
+
+**17.1 Automationsrecht**  
+Codex App darf Änderungen an Canonicals ausführen, sofern:
+1) *One PR = One Intent* dokumentiert ist,  
+2) Scope & Impact im PR beschrieben sind,  
+3) ein Owner-Review vor Merge erfolgt.
+
+**17.2 Doppelte Qualitätskontrolle**  
+1) *Technisch:* CI, Schema-Validator, PR-Guards.  
+2) *Semantisch:* Owner Review & Lessons-Eintrag.
+
+**17.3 Feedback-Integration**  
+Nach erfolgreichem Merge:
+- Aktualisierung von `meta/system_version.json` (Health/Phase, falls relevant),  
+- Lessons werden mit PR-Metadaten verknüpft,  
+- Health-Score +0.1–0.2, wenn beide Validierungen „grün“.
+
+**17.4 Safety Overrides**  
+`freeze_status = active` im Playbook blockiert alle Codex-Writes bis manueller Reset.
+
+**17.5 Auditability**  
+Jede Codex-Aktion schreibt einen Governance-Eintrag in `artefacts/governance_health_index.json` (Zeitpunkt, Intent, Datei, Gate-Status).
