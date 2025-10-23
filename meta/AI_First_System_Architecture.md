@@ -1,9 +1,25 @@
 ---
-title: AI-First System Architecture
-version: v3.1
-status: canonical
-updated: 2025-10-23
-owner: stephan-adod
+title: "AI-First System Architecture"
+version: "v3.1"
+status: "canonical"
+phase: "Recovery"
+owner: "stephan-adod"
+secondary_owner: "ai-core-bot"
+updated: "2025-10-23"
+review_due: "2025-12-22"
+retention: "permanent"
+dependencies:
+  - "meta/AI_First_Handbook.md"
+linked_docs:
+  - "meta/AI_First_Roadmap.md"
+  - "meta/Human_in_the_Loop_Playbook.md"
+accountability_scope: "meta/*"
+policy_source: "meta/AI_First_Handbook.md"
+policy_version: "v3.1"
+governance_phase: "Recovery → Stabilization"
+layer: "infrastructure"
+review_status: "pending"
+notes: "Includes Micro DaaS Factory contract"
 ---
 
 # Architektur v3.1

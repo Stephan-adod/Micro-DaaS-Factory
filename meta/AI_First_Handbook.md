@@ -1,9 +1,25 @@
 ---
-title: AI-First Handbook
-version: v3.1
-status: canonical
-updated: 2025-10-23
-owner: stephan-adod
+title: "AI-First Handbook"
+version: "v3.1"
+status: "canonical"
+phase: "Recovery"
+owner: "stephan-adod"
+secondary_owner: "ai-core-bot"
+updated: "2025-10-23"
+review_due: "2025-12-22"
+retention: "permanent"
+dependencies:
+  - "meta/CORE_INDEX.md"
+linked_docs:
+  - "meta/system_version.json"
+  - "meta/AI_First_Roadmap.md"
+accountability_scope: "meta/*"
+policy_source: "meta/AI_First_Handbook.md"
+policy_version: "v3.1"
+governance_phase: "Recovery → Stabilization"
+layer: "semantic"
+review_status: "pending"
+notes: "Policy anchor for AI-Native Governance v3.1"
 ---
 
 # AI-First Handbook (Policy Anchor)
