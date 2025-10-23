@@ -83,3 +83,7 @@ Health = 0.4·mROI + 0.3·Uplift + 0.2·(1 + ΔMAPE) + 0.1·(1 − Freshness/14)
 
 ## 10 · Outcome
 Wenn mROI > 1 und Health > 0.8, trägt sich das System selbst – Governance wird ökonomisch lebendig.
+
+## Meta-Note (Stephan Style)
+> Wirtschaft ist Sprache in Zahlen.  
+> Wenn mROI zur Grammatik wird, beginnt Governance zu denken.
