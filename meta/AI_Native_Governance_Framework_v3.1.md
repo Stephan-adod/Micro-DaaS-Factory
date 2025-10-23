@@ -21,6 +21,7 @@ linked_docs:
 layer: framework
 policy_source: meta/AI_Native_Governance_Framework_v3.1.md
 policy_version: v3.1
+review_status: done
 ---
 
 # AI Native Governance as Infrastructure (ANGI)

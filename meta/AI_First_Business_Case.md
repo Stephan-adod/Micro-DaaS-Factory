@@ -18,7 +18,7 @@ policy_source: "meta/AI_First_Handbook.md"
 policy_version: "v3.1"
 governance_phase: "Recovery → Stabilization"
 layer: "semantic"
-review_status: "pending"
+review_status: "done"
 notes: "Refined KPI definition, Health formula, Loop B activation"
 ---
 

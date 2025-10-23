@@ -19,7 +19,7 @@ dependencies:
 linked_docs:
   - artefacts/governance_health_index.json
   - meta/system_version.json
-review_status: pending
+review_status: in_progress
 ---
 
 # Human in the Loop Playbook (Semantic ↔ Operational Bridge)

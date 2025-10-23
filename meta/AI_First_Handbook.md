@@ -17,7 +17,7 @@ linked_docs:
   - meta/AI_First_Roadmap.md
   - meta/Human_in_the_Loop_Playbook.md
   - meta/AI_First_Business_Case.md
-review_status: pending
+review_status: done
 ---
 
 # AI First Handbook (Policy Anchor)
