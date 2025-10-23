@@ -3,6 +3,7 @@ title: AI First System Architecture
 version: v3.1
 status: canonical
 phase: enrichment
+governance_phase: Recovery → Stabilization
 owner: stephan-adod
 updated: 2025-10-23
 review_due: 2026-01-21
@@ -18,7 +19,7 @@ linked_docs:
   - meta/Human_in_the_Loop_Playbook.md
   - meta/system_version.json
   - artefacts/governance_health_index.json
-review_status: in_progress
+review_status: pending
 ---
 
 # AI First System Architecture (Infrastructure Anchor)
