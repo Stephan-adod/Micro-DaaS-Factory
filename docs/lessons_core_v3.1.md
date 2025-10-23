@@ -7,3 +7,8 @@
 - **What:** Der Chronical Layer wurde als vierte Governance-Ebene definiert.
 - **Why:** Governance braucht Erinnerung, um sich selbst verstehen und verbessern zu können.
 - **Impact:** Framework erzeugt jetzt reflexive Signale (Lessons, Health, Changelog) → messbare Selbstbeobachtung.
+
+## 2025-10-23 · Roadmap Enrichment (Operational Layer Activation)
+- **What:** Operative Phasenstruktur, Rhythmusparameter und KPI-Gates in Roadmap verankert.
+- **Why:** Governance braucht einen überprüfbaren Takt, der Bedeutung in Handlung überführt.
+- **Impact:** Health-gekoppelter Fortschritt (+0.15 erwartet); Roadmap wird zum lernenden Artefakt (Phase Recap).
