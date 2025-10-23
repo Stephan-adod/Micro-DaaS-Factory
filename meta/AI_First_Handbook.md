@@ -1,56 +1,90 @@
 ---
-title: "AI-First Handbook"
-version: "v3.1"
-status: "canonical"
-phase: "Recovery"
-owner: "stephan-adod"
-secondary_owner: "ai-core-bot"
-updated: "2025-10-23"
-review_due: "2025-12-22"
-retention: "permanent"
+title: AI First Handbook
+version: v3.1
+status: canonical
+phase: enrichment
+owner: stephan-adod
+updated: 2025-10-23
+review_due: 2026-01-21
+retention: permanent
+layer: semantic
+policy_source: meta/AI_Native_Governance_Framework_v3.1.md
+policy_version: v3.1
 dependencies:
-  - "meta/CORE_INDEX.md"
+  - meta/AI_Native_Governance_Framework_v3.1.md
 linked_docs:
-  - "meta/system_version.json"
-  - "meta/AI_First_Roadmap.md"
-accountability_scope: "meta/*"
-policy_source: "meta/AI_First_Handbook.md"
-policy_version: "v3.1"
-governance_phase: "Recovery → Stabilization"
-layer: "semantic"
-review_status: "pending"
-notes: "Policy anchor for AI-Native Governance v3.1"
+  - meta/AI_First_Roadmap.md
+  - meta/Human_in_the_Loop_Playbook.md
+  - meta/AI_First_Business_Case.md
+review_status: reviewed
 ---
 
-# AI-First Handbook (Policy Anchor)
+# AI First Handbook (Policy Anchor)
 
-## Zweck
-Gemeinsame Sprache, Hard Rules und Verantwortlichkeiten für AI-Native Governance.
+## 1 · Zweck
+Das *AI First Handbook* definiert die **semantische Grundlage** des Core-Governance-Frameworks.  
+Es legt fest, **was Begriffe bedeuten**, **welche Werte Priorität haben**, und **wie Regeln als maschinell prüfbare Policy** verstanden werden.
 
-## Core Principles (Hard Rules)
-1. One PR = One Intent
-2. No Future Dates (Frontmatter `updated` ≤ Commit-Zeit)
-3. Owner Pflicht (Core-Files: `owner: stephan-adod`)
-4. Links müssen existieren (keine toten Verweise im Core)
-5. Governance = Infrastructure (Regeln sind maschinell prüfbar)
-6. Human in the Loop aktiv (Playbook kann jederzeit stoppen)
+> Governance beginnt hier – im Sprachkern des Systems.  
+> Bedeutung ist Infrastruktur.
 
-## Governance Layer (Definition)
-- **Semantic:** Bedeutung & Wert → Handbook, Business Case  
-- **Operational:** Umsetzung & Takt → Roadmap, Playbook, Bootstrap  
-- **Infrastructure:** Struktur & Validierung → Architecture, Schema, System Version, Health Index
+## 2 · Semantic Seeds
+| Seed | Beschreibung |
+|------|---------------|
+| AI-Native Mindset | Entscheidungen werden so gestaltet, dass Maschinen und Menschen gleichberechtigt verständlich agieren können. |
+| Governance as Code | Jede Regel wird maschinenlesbar formuliert und versioniert. |
+| Owner-Lifestyle Balance | Menschliche Kapazität begrenzt den operativen Scope; das System schützt diese Grenze. |
+| Economy Alignment | Wirtschaftliche Kennzahlen spiegeln den Wert und Zustand des Governance-Systems. |
+| Self-Observation as Value | Beobachtung und Reflexion sind messbare Systemleistungen. |
+| Human Override Principle | Menschliche Eingriffe bleiben oberste Instanz – unabhängig von Automatik. |
+| Policy Feedback Loop | Jede Policy erzeugt eine Rückkopplung: Messung → Anpassung → Stabilisierung. |
 
-## Canonical Core (v3.1)
-- meta/AI_First_Handbook.md  
-- meta/AI_First_Roadmap.md  
-- meta/AI_First_System_Architecture.md  
-- meta/Human_in_the_Loop_Playbook.md  
-- meta/governance_recovery_bootstrap_v3.1.md  
-- meta/governance_manifest_schema_v3.1.json  
-- meta/system_version.json  
-- meta/AI_First_Business_Case.md  
-- artefacts/governance_health_index.json *(optional, automatisch erzeugt)*
+## 3 · Core Policy Principles
+1. **Bedeutung vor Prozess** – Regeln werden erst verstanden, dann automatisiert.  
+2. **Automatisierung = Verantwortung** – Code trägt Governance-Pflicht.  
+3. **Transparenz = Vertrauen** – Nur nachvollziehbare Abläufe sind gültig.  
+4. **Balance ist Pflicht** – Der Owner bleibt Mensch, nicht Operator.  
+5. **Feedback ist Wert** – Lernen ist eine Governance-Leistung.
 
-## Change Control
-- Policy-Änderungen = PR-Typ **POLICY**, brauchen expliziten Review.
-- Tags nur, wenn Gates aus Bootstrap grün sind (Scope/Health/Ecosystem).
+## 4 · Hard Rules (nicht verhandelbar)
+- Volles Frontmatter gemäß `frontmatter_standard_v3.1.md`.  
+- `owner` = `stephan-adod`.  
+- Kein `updated` > Commit-Datum.  
+- Jeder PR enthält Intent + Scope + Impact.  
+- `review_due` ≤ +90 Tage.
+
+## 5 · Soft Guards (kontextsensitiv)
+- Loop-Intensität (A/B/C) darf angepasst werden.  
+- Health-Index darf temporär < 0.8 fallen während Lernphasen.  
+- Owner kann Playbook-Override setzen.  
+- Principles dürfen erweitert, nicht gelöscht werden.
+
+## 6 · Interfaces (Cross Links)
+| Ziel | Zweck | Verbindung |
+|------|--------|------------|
+| Roadmap | Operative Phasensteuerung | Policy → Phase Rules |
+| Playbook | Human Override | Lifestyle Gates |
+| Business Case | Wirtschaftliche Steuerung | KPI Anchors |
+| System Architecture | Technische Umsetzung | Policy → Micro DaaS Spec |
+
+## 7 · Governance Hooks
+**Loops:** A · B · C  
+**Gates:** Scope → Health → Ecosystem  
+**Expected Health Impact:** +0.2 nach Owner Review  
+Hook-Level: `semantic · enrichment · v3.1`
+
+## 8 · Feedback Protocol
+1. Owner Review → semantische Kohärenz prüfen  
+2. Lessons Update → `docs/lessons_core_v3.1.md` ergänzen  
+3. Schema Sync → Canonical Fields validieren  
+4. System-Version Commit → Health/Phase aktualisieren
+
+## 9 · Lessons (Phase 2)
+**What:** Das Handbook wandelt Struktur in Bedeutung um.  
+**Why:** Nur klare Sprache ermöglicht messbare Governance.  
+**Impact:** Policy wird von Dokument zu Infrastruktur.
+
+## 10 · Meta-Note (Stephan Style)
+> Sprache ist der Code der Governance.  
+> Wenn Bedeutung maschinenlesbar wird, entsteht Selbststeuerung.  
+> Dieses Handbook ist der semantische Quellcode des Core-Systems.
