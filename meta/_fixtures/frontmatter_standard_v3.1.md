@@ -1,10 +1,18 @@
 ---
-title: Frontmatter Standard v3.1
-version: v3.1
-status: canonical
-updated: 2025-10-23
-owner: stephan-adod
-layer: meta
+title: "Frontmatter Standard v3.1"
+version: "v3.1"
+status: "fixture"
+phase: "enrichment"
+governance_phase: "Recovery → Stabilization"
+owner: "stephan-adod"
+updated: "2025-10-23"
+review_due: "2026-01-21"
+retention: "temp"
+layer: "meta"
+policy_source: "meta/AI_Native_Governance_Framework_v3.1.md"
+policy_version: "v3.1"
+review_status: "in_progress"
+notes: "Non-Canonical; CI-whitelisted"
 ---
 
 # Frontmatter Standard · v3.1
