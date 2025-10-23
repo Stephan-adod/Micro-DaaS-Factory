@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-import os
-import sys
-import json
-import glob
+import os, sys, json, glob, math
 from datetime import datetime, timezone, timedelta
 
 try:
@@ -12,16 +9,8 @@ except Exception:
 
 SCHEMA_VERSION = "v3.1-refine-1"
 
-
-def emit(level, **fields):
-    payload = {"level": level}
-    payload.update(fields)
-    print(json.dumps(payload))
-
-
 def iso_to_dt(s):
-    return datetime.fromisoformat(s.replace("Z", "+00:00"))
-
+    return datetime.fromisoformat(s.replace("Z","+00:00"))
 
 def now_utc(arg_now=None):
     if arg_now:
@@ -30,7 +19,6 @@ def now_utc(arg_now=None):
     if env:
         return iso_to_dt(env)
     return datetime.now(timezone.utc)
-
 
 def _parse_scalar(value):
     if value == "":
@@ -81,28 +69,20 @@ def _simple_yaml_parse(text):
 
 
 def load_config():
-    path = "configs/telemetry/config.yaml"
-    with open(path, "r", encoding="utf-8") as f:
+    with open("configs/telemetry/config.yaml","r",encoding="utf-8") as f:
         text = f.read()
     try:
-        import yaml  # type: ignore
+        import yaml
     except Exception:
         return _simple_yaml_parse(text)
     return yaml.safe_load(text)
 
-
 def compute_health(e, w):
     mROI = float(e["mROI"])
-    uplift = float(e["Uplift"])
-    delta_mape = float(e.get("delta_mape", e.get("ΔMAPE", 0.0)))
-    freshness = float(e.get("Freshness", 0.0))
-    return (
-        w["mROI"] * mROI
-        + w["uplift"] * uplift
-        + w["delta_mape"] * (1 - delta_mape)
-        + w["freshness"] * freshness
-    )
-
+    Up = float(e["Uplift"])
+    dM = float(e.get("delta_mape", e.get("ΔMAPE", 0.0)))
+    Fr = float(e.get("Freshness", 0.0))
+    return w["mROI"]*mROI + w["uplift"]*Up + w["delta_mape"]*(1 - dM) + w["freshness"]*Fr
 
 def in_01(x):
     try:
@@ -111,139 +91,126 @@ def in_01(x):
         return False
     return 0.0 <= xf <= 1.0
 
-
 def validate_bounds(e):
-    keys = [("mROI", "mROI"), ("Uplift", "Uplift"), ("Freshness", "Freshness")]
-    if "delta_mape" in e:
-        keys.append(("delta_mape", "delta_mape"))
-    elif "ΔMAPE" in e:
-        keys.append(("ΔMAPE", "ΔMAPE"))
-    for k, _ in keys:
+    keys = [("mROI","mROI"),("Uplift","Uplift"),("Freshness","Freshness")]
+    if "delta_mape" in e: keys.append(("delta_mape","delta_mape"))
+    elif "ΔMAPE" in e: keys.append(("ΔMAPE","ΔMAPE"))
+    for k,_ in keys:
         if not in_01(e.get(k)):
             raise ValueError(f"out_of_bounds:{k}:{e.get(k)}")
 
-
 def schema_validate(payload):
     if jsonschema is None:
-        emit("warn", code="jsonschema_missing", msg="jsonschema not installed; skipping strict validation")
+        print('[WARN] jsonschema not installed, skipping strict schema validation.')
         return
-    with open("artefacts/governance_health_index.schema.json", "r", encoding="utf-8") as f:
+    with open("artefacts/governance_health_index.schema.json","r",encoding="utf-8") as f:
         schema = json.load(f)
     jsonschema.validate(instance=payload, schema=schema)
 
-
 def parse_args(argv):
     import argparse
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--write", action="store_true", help="write filled entries to _filled/")
-    parser.add_argument(
-        "--strict-window", action="store_true", help="fail if >threshold of entries are stale"
-    )
-    parser.add_argument("--now", type=str, default=None, help="override NOW_UTC (ISO8601)")
-    return parser.parse_args(argv)
-
+    p = argparse.ArgumentParser()
+    p.add_argument("--write", action="store_true", help="write filled entries to _filled/")
+    p.add_argument("--strict-window", action="store_true", help="fail if >threshold of entries are stale")
+    p.add_argument("--now", type=str, default=None, help="override NOW_UTC (ISO8601)")
+    p.add_argument("--gate", choices=["soft","hard"], default="hard", help="threshold to enforce (soft warns, hard errors)")
+    return p.parse_args(argv)
 
 def main():
     args = parse_args(sys.argv[1:])
     cfg = load_config()
-    now = now_utc(args.now)
+    NOW = now_utc(args.now)
     files = sorted(glob.glob("artefacts/health_records/*.json"))
     if not files:
-        emit("error", code="no_files", msg="No health record files found.")
+        print(json.dumps({"level":"error","code":"no_files","msg":"No health record files found."}))
         return 2
 
-    weights = cfg["weights"]
-    tolerance = float(cfg["validation"]["tolerance"])
+    w = cfg["weights"]
+    tol = float(cfg["validation"]["tolerance"])
     window_days = int(cfg["validation"]["review_window_days"])
-    strict_threshold = float(cfg["validation"]["strict_window_threshold"])
+    strict_thr = float(cfg["validation"]["strict_window_threshold"])
     weighted = bool(cfg["aggregation"]["weighted"])
     weight_field = cfg["aggregation"]["weight_field"]
 
     any_error = False
-    aggregate = []
+    agg = []
 
     for fp in files:
-        with open(fp, "r", encoding="utf-8") as handle:
-            data = json.load(handle)
+        with open(fp,"r",encoding="utf-8") as f:
+            data = json.load(f)
 
         if data.get("version") != SCHEMA_VERSION:
-            emit(
-                "warn",
-                code="schema_version_mismatch",
-                file=fp,
-                version=data.get("version"),
-                expected=SCHEMA_VERSION,
-            )
+            print(json.dumps({"level":"warn","code":"schema_version_mismatch","file":fp,"version":data.get("version")}))
         try:
             schema_validate(data)
-        except Exception as exc:
-            emit("error", code="schema_validation_failed", file=fp, msg=str(exc))
+        except Exception as ex:
+            print(json.dumps({"level":"error","code":"schema_validation_failed","file":fp,"msg":str(ex)}))
             any_error = True
             continue
 
         entries = data.get("entries", [])
         stale = 0
-        filled = {
-            "version": data.get("version"),
-            "health_formula": data.get("health_formula"),
-            "review_window_days": data.get("review_window_days"),
-            "entries": [],
-        }
+        filled = {"version": data.get("version"), "health_formula": data.get("health_formula"),
+                  "review_window_days": data.get("review_window_days"), "entries": []}
 
-        for entry in entries:
+        for e in entries:
             try:
-                validate_bounds(entry)
-            except Exception as exc:
-                emit("error", code="bounds", service=entry.get("service"), msg=str(exc))
+                validate_bounds(e)
+            except Exception as ex:
+                print(json.dumps({"level":"error","code":"bounds","service":e.get("service"),"msg":str(ex)}))
                 any_error = True
                 continue
 
-            ts = iso_to_dt(entry["timestamp"])
-            if ts < (now - timedelta(days=window_days)):
+            ts = iso_to_dt(e["timestamp"])
+            if ts < (NOW - timedelta(days=window_days)):
                 stale += 1
-                emit("warn", code="stale_entry", service=entry.get("service"), timestamp=entry["timestamp"])
+                print(json.dumps({"level":"warn","code":"stale_entry","service":e.get("service"),"timestamp":e["timestamp"]}))
 
-            calculated = compute_health(entry, weights)
-            current = float(entry.get("Health", 0.0))
-            if abs(current - calculated) > tolerance and args.write and current == 0.0:
-                entry["Health"] = round(calculated, 6)
-            entry_health = float(entry.get("Health", calculated))
-            aggregate.append((entry, entry_health, entry.get(weight_field, 1.0)))
-            filled["entries"].append(entry)
+            calc = compute_health(e, w)
+            current = float(e.get("Health", 0.0))
+
+            # Abgleich & optionales Auto-Fill nur mit --write
+            if abs(current - calc) > tol and args.write and current == 0.0:
+                e["Health"] = round(calc, 6)
+
+            # WICHTIG: In Dry-Run (kein --write) aggregieren wir calc statt 0.0-Platzhalter
+            e_health = calc if current == 0.0 else current
+            agg.append((e, e_health, e.get(weight_field, 1.0)))
+            filled["entries"].append(e)
 
         if args.write:
             out_dir = "artefacts/health_records/_filled"
             os.makedirs(out_dir, exist_ok=True)
             out_fp = os.path.join(out_dir, os.path.basename(fp))
-            with open(out_fp, "w", encoding="utf-8") as handle:
-                json.dump(filled, handle, ensure_ascii=False, indent=2)
+            with open(out_fp,"w",encoding="utf-8") as f:
+                json.dump(filled, f, ensure_ascii=False, indent=2)
 
-        ratio_stale = (stale / len(entries)) if entries else 0.0
-        if args.strict_window and ratio_stale > strict_threshold:
-            emit("error", code="stale_ratio", file=fp, ratio=ratio_stale)
+        ratio_stale = (stale/len(entries)) if entries else 0.0
+        if args.strict_window and ratio_stale > strict_thr:
+            print(json.dumps({"level":"error","code":"stale_ratio","file":fp,"ratio":ratio_stale}))
             any_error = True
 
-    if aggregate:
+    # Aggregation
+    if agg:
         if weighted:
-            numerator = sum(health * weight for _, health, weight in aggregate)
-            denominator = sum(weight for *_, weight in aggregate) or 1.0
-            avg = numerator / denominator
+            num = sum(h*wgt for _,h,wgt in agg)
+            den = sum(wgt for *_ , wgt in agg) or 1.0
+            avg = num/den
         else:
-            avg = sum(health for _, health, _ in aggregate) / len(aggregate)
+            avg = sum(h for _,h,_ in agg)/len(agg)
 
-        emit("info", code="avg_health", value=round(avg, 6))
+        avg = round(avg, 6)
+        print(json.dumps({"level":"info","code":"avg_health","value":avg}))
         soft = float(cfg["validation"]["min_avg_health_soft"])
         hard = float(cfg["validation"]["min_avg_health_hard"])
 
-        if avg < hard:
-            emit("error", code="avg_below_hard", hard=hard, avg=avg)
+        if args.gate == "hard" and avg < hard:
+            print(json.dumps({"level":"error","code":"avg_below_hard","hard":hard,"avg":avg}))
             any_error = True
         elif avg < soft:
-            emit("warn", code="avg_below_soft", soft=soft, avg=avg)
+            print(json.dumps({"level":"warn","code":"avg_below_soft","soft":soft,"avg":avg}))
 
     return 1 if any_error else 0
-
 
 if __name__ == "__main__":
     sys.exit(main())
