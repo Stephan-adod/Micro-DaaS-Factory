@@ -2,8 +2,26 @@
 title: AI Native Governance as Infrastructure Framework
 version: v3.1
 status: canonical
-updated: 2025-10-23
+phase: Recovery
 owner: stephan-adod
+updated: 2025-10-23
+review_due: 2026-01-21
+retention: permanent
+dependencies: []
+linked_docs:
+  - meta/AI_First_Handbook.md
+  - meta/AI_First_Business_Case.md
+  - meta/AI_First_Roadmap.md
+  - meta/Human_in_the_Loop_Playbook.md
+  - meta/governance_recovery_bootstrap_v3.1.md
+  - meta/AI_First_System_Architecture.md
+  - meta/governance_manifest_schema_v3.1.json
+  - meta/system_version.json
+  - artefacts/governance_health_index.json
+layer: framework
+policy_source: meta/AI_Native_Governance_Framework_v3.1.md
+policy_version: v3.1
+review_status: pending
 ---
 
 # AI Native Governance as Infrastructure (ANGI)
@@ -207,5 +225,40 @@ Nach erfolgreichem Merge:
 **17.4 Safety Overrides**  
 `freeze_status = active` im Playbook blockiert alle Codex-Writes bis manueller Reset.
 
-**17.5 Auditability**  
+**17.5 Auditability**
 Jede Codex-Aktion schreibt einen Governance-Eintrag in `artefacts/governance_health_index.json` (Zeitpunkt, Intent, Datei, Gate-Status).
+
+## 18 · Chronical Layer Definition (Phase 2+)
+
+**18.1 Zweck**
+Der *Chronical Layer* dokumentiert die Evolution des Governance-Systems.
+Er ist nicht steuernd, sondern erinnernd: Er speichert, wie sich Regeln, Prinzipien und Entscheidungen über Zeit entwickeln.
+
+**18.2 Abgrenzung**
+- *Framework Layer* = Gesetz (was gilt)
+- *Semantic Layer* = Bedeutung (warum es gilt)
+- *Operational Layer* = Ausführung (wie es gilt)
+- *Chronical Layer* = Erinnerung (was daraus gelernt wurde)
+
+**18.3 Quellen & Formate**
+Chronicals werden aus Loops A/B/C gespeist und folgen der Struktur:
+- Lessons → `docs/lessons_core_v3.1.md`
+- Health Index → `artefacts/governance_health_index.json`
+- Changelogs → `docs/changelog_core_v3.1.md` *(optional)*
+
+**18.4 Steuerlogik**
+Chronicals werden *vom Framework erzeugt*, aber *nicht von ihm gesteuert*.
+Jede Framework- oder Canonical-Änderung erzeugt ein Chronical-Signal (What/Why/Impact).
+Diese Signale werden automatisch oder manuell in den Lessons-Container geschrieben.
+
+**18.5 Canonical Rules**
+- Chronicals dürfen keine Policies ändern.
+- Sie sind versioniert nach Phase (z. B. `lessons_core_v3.1.md`).
+- Sie sind „append-only“ (keine Löschung, nur Ergänzung).
+- Sie sind maschinenlesbar (Schema-kompatibel).
+- `review_status: permanent`
+
+**18.6 Meta-Kommentar**
+> Chronicals sind das Gedächtnis der Governance.
+> Sie halten fest, wie das Framework sich selbst verändert hat.
+> So wird Governance nicht nur ausgeführt, sondern verstanden.
