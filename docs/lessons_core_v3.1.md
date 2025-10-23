@@ -39,3 +39,41 @@ notes: "Non-Canonical; CI-whitelisted"
 - **What:** Kapazitäts-, Ethik- und Ops-Regeln im Playbook verankert.  
 - **Why:** Governance braucht bewusste Grenzen und sichtbare Verantwortung.  
 - **Impact:** Human Layer aktiviert; Health +0.1 nach Review; Compliance und Ethik messbar.
+---
+# Lessons Learned · Phase 2 (Enrichment) → v3.1
+
+## What
+Die Enrichment-Phase hat das Framework ökonomisch, semantisch und strukturell synchronisiert.
+Alle Canonicals sprechen dieselbe Sprache, und der Business Case bildet jetzt das messbare Zentrum des Systems.
+
+## Why
+Governance kann nur dann skalieren, wenn Bedeutung, Wert und Kontrolle denselben semantischen Kern teilen.
+Erst durch die Verknüpfung von Policy → Economy → Telemetry entsteht Steuerbarkeit ohne Kontrollverlust.
+
+## Impact
+- Health-Baseline: 0.0 → 0.7  
+- Owner-Load stabil innerhalb der Gates (≤ 5 Ops/Woche)  
+- Semantik + Ökonomie + Infrastructure in Balance  
+- Phase 2 abgeschlossen, Loop B aktiviert, Loop C vorbereitet
+
+## Observations
+1. Semantic Consistency-Check war Schlüssel für Policy-Kohärenz.  
+2. Business-Case-Formeln lieferten erstmals messbaren „Value Flow“.  
+3. Screening-Runner v3.1 bewährte sich als Governance-Audit-Tool.  
+4. Menschliche Achtsamkeit bleibt Engpass – Playbook-Freeze essenziell.  
+5. **ChatGPT-Guidance:** Der Owner wünscht sich in künftigen Phasen eine phasenbewusste Führung:
+   - mehr Unterstützung beim Navigieren der Loops (Draft → Review → Refinement → Merge),
+   - weniger Vorgriffe auf spätere Prozessschritte,
+   - klare Hinweise, *wann* welcher Schritt relevant wird.
+
+## Learnings for Phase 3
+- Health-Schema (JSON) → technisch operationalisieren (CI-Validation)  
+- Loops A/B/C → Telemetry + Lessons automatisch synchronisieren  
+- Roadmap → 14-Tage-Cadence fixieren + Phase-Trigger automatisieren  
+- Architecture → Health Events → governance_health_index.json  
+- Handbook → stabilisieren & Policy-Feedback automatisch verfolgen  
+- **ChatGPT-Integration v3.2:** Guidance-Flow so anpassen, dass das System phasengetreu führt und Owner-Rhythmus respektiert.
+
+## Meta-Note (Stephan Style)
+> Lernen heißt nicht schneller werden, sondern bewusster steuern.  
+> Achtsamkeit ist Governance in menschlicher Form.
