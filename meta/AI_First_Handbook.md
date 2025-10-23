@@ -32,7 +32,7 @@ Gemeinsame Sprache, Hard Rules und Verantwortlichkeiten für AI-Native Governanc
 - meta/governance_recovery_bootstrap_v3.1.md  
 - meta/governance_manifest_schema_v3.1.json  
 - meta/system_version.json  
-- docs/AI_First_Business_Case.md  
+- meta/AI_First_Business_Case.md  
 - artefacts/governance_health_index.json *(optional, automatisch erzeugt)*
 
 ## Change Control
