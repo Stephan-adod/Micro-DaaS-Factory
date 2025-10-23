@@ -17,3 +17,8 @@
 - **What:** Micro DaaS Factory, Value-Flow Map, Telemetry & Chronical Hooks, Resilience (Audit Grace) verankert.
 - **Why:** Governance braucht technische Träger, die Wert, Gesundheit und Lernen koppeln.
 - **Impact:** Health-gekoppelter Fortschritt (+0.15 erwartet); Infrastruktur wird Governance-fähig.
+
+## 2025-10-23 · Playbook Enrichment (Human Signal Activation)
+- **What:** Kapazitäts-, Ethik- und Ops-Regeln im Playbook verankert.  
+- **Why:** Governance braucht bewusste Grenzen und sichtbare Verantwortung.  
+- **Impact:** Human Layer aktiviert; Health +0.1 nach Review; Compliance und Ethik messbar.
