@@ -1,0 +1,37 @@
+{
+  "version": "v3.1-refine-1",
+  "health_formula": "(0.4*mROI + 0.3*Uplift + 0.2*(1-delta_mape) + 0.1*Freshness)",
+  "review_window_days": 14,
+  "entries": [
+    {
+      "timestamp": "2025-10-23T10:00:00Z",
+      "service": "answering-api",
+      "mROI": 0.62,
+      "Uplift": 0.18,
+      "delta_mape": 0.22,
+      "Freshness": 0.85,
+      "Health": 0.0,
+      "commit_hash": "abc1234"
+    },
+    {
+      "timestamp": "2025-10-23T10:05:00Z",
+      "service": "retrieval-indexer",
+      "mROI": 0.55,
+      "Uplift": 0.20,
+      "delta_mape": 0.25,
+      "Freshness": 0.80,
+      "Health": 0.0,
+      "commit_hash": "def5678"
+    },
+    {
+      "timestamp": "2025-10-23T10:10:00Z",
+      "service": "governance-orchestrator",
+      "mROI": 0.70,
+      "Uplift": 0.22,
+      "delta_mape": 0.18,
+      "Freshness": 0.90,
+      "Health": 0.0,
+      "commit_hash": "ghi9012"
+    }
+  ]
+}

@@ -1,484 +1,249 @@
-"""Utilities for governance screening tasks.
-
-This module provides a small toolbox that CI jobs can invoke to validate the
-governance repository.  The original implementation only contained helpers for
-CODEOWNERS lookups and Markdown discovery.  The screening command that the
-product team now runs locally performs additional checks – it validates
-frontmatter metadata, verifies dependency freshness and emits machine- and
-human-readable reports.
-
-Instead of keeping an ad-hoc Python one-liner around, we embed the behaviour in
-this module so it can be unit-tested and shipped without external dependencies.
-"""
-from __future__ import annotations
-
-import json
+#!/usr/bin/env python3
 import os
-from dataclasses import dataclass
-from datetime import date, datetime, timedelta
-from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+import sys
+import json
+import glob
+from datetime import datetime, timezone, timedelta
 
-OWNER_REQ = "stephan-adod"
-VERSION_REQ = "v3.1"
-REQUIRED_FIELDS = [
-    "title",
-    "version",
-    "status",
-    "phase",
-    "owner",
-    "updated",
-    "review_due",
-    "retention",
-    "dependencies",
-    "linked_docs",
-    "layer",
-    "policy_source",
-    "policy_version",
-]
-REVIEW_WINDOW_DAYS = 90
+try:
+    import jsonschema
+except Exception:
+    jsonschema = None
+
+SCHEMA_VERSION = "v3.1-refine-1"
 
 
-def _normalize_handle(value: str | None) -> str | None:
-    """Return the canonical representation of a CODEOWNERS handle."""
-
-    if value is None:
-        return None
-    return value.lstrip("@")
+def emit(level, **fields):
+    payload = {"level": level}
+    payload.update(fields)
+    print(json.dumps(payload))
 
 
-def _parse_codeowners(codeowners_path: Path) -> Dict[str, List[str]]:
-    """Parse the CODEOWNERS file into a mapping of pattern → owners."""
-
-    rules: Dict[str, List[str]] = {}
-    if not codeowners_path.exists():
-        return rules
-
-    for raw_line in codeowners_path.read_text().splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#"):
-            continue
-
-        parts = line.split()
-        pattern, *owners = parts
-        rules[pattern] = [_normalize_handle(owner) for owner in owners]
-
-    return rules
+def iso_to_dt(s):
+    return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
 
-def check_codeowners(
-    base_path: Path | str = Path("."),
-    required_owner: str = OWNER_REQ,
-    patterns: Iterable[str] | None = None,
-) -> Dict[str, object]:
-    """Check whether required CODEOWNERS coverage exists for select patterns."""
-
-    base = Path(base_path)
-    codeowners_path = base / "CODEOWNERS"
-    normalized_required_owner = _normalize_handle(required_owner)
-
-    result: Dict[str, object] = {
-        "path": str(codeowners_path),
-        "rules": _parse_codeowners(codeowners_path),
-        "issues": [],
-    }
-
-    if not codeowners_path.exists():
-        result["issues"].append("CODEOWNERS_missing")
-        return result
-
-    monitored_patterns = list(patterns or ("meta/*", "artefacts/*"))
-    rules = result["rules"]
-    for pattern in monitored_patterns:
-        owners = rules.get(pattern, [])
-        normalized_owners = [_normalize_handle(owner) for owner in owners]
-        if normalized_required_owner not in normalized_owners:
-            result["issues"].append(f"CODEOWNERS_{pattern}_missing_or_wrong")
-
-    return result
+def now_utc(arg_now=None):
+    if arg_now:
+        return iso_to_dt(arg_now)
+    env = os.getenv("NOW_UTC", "").strip()
+    if env:
+        return iso_to_dt(env)
+    return datetime.now(timezone.utc)
 
 
-def collect_markdowns(base_path: Path | str) -> List[Path]:
-    """Collect Markdown files while respecting the CI ignore whitelist."""
-
-    base = Path(base_path)
-    ign_env = os.getenv(
-        "GOV_IGNORE_PATTERNS",
-        "_fixtures/;artefacts/screening_report;/.github/pull_request_template",
-    )
-    ignore_patterns = [pattern.strip() for pattern in ign_env.split(";") if pattern.strip()]
-
-    markdown_paths: List[Path] = []
-    for path in base.rglob("*.md"):
-        path_str = str(path)
-        if any(ignore in path_str for ignore in ignore_patterns):
-            continue
-        markdown_paths.append(path)
-
-    return markdown_paths
-
-
-def _read_text(path: Path) -> str:
-    try:
-        return path.read_text(encoding="utf-8")
-    except FileNotFoundError:
+def _parse_scalar(value):
+    if value == "":
         return ""
-
-
-def _split_frontmatter(text: str) -> Tuple[List[str], str] | Tuple[None, None]:
-    lines = text.splitlines()
-    if not lines or lines[0].strip() != "---":
-        return None, None
-
-    frontmatter_lines: List[str] = []
-    for line in lines[1:]:
-        if line.strip() == "---":
-            break
-        frontmatter_lines.append(line.rstrip("\r"))
-    else:
-        return None, None
-
-    return frontmatter_lines, "\n".join(lines[len(frontmatter_lines) + 2 :])
-
-
-def _parse_scalar(value: str) -> object:
-    value = value.strip()
-    if not value:
-        return ""
-
-    if (value.startswith('"') and value.endswith('"')) or (
-        value.startswith("'") and value.endswith("'")
-    ):
+    if value.startswith("\"") and value.endswith("\""):
         return value[1:-1]
-
+    if value.startswith("'") and value.endswith("'"):
+        return value[1:-1]
     lowered = value.lower()
-    if lowered in {"true", "false"}:
-        return lowered == "true"
-
-    if value.startswith("[") and value.endswith("]"):
-        try:
-            return json.loads(value)
-        except json.JSONDecodeError:
-            return value
-
-    return value
-
-
-def parse_frontmatter(path: Path) -> Tuple[Dict[str, object] | None, str | None]:
-    """Parse YAML-like frontmatter without external dependencies."""
-
-    text = _read_text(path)
-    split = _split_frontmatter(text)
-    if split == (None, None):
-        return None, "no_frontmatter"
-
-    fm_lines, _ = split
-    data: Dict[str, object] = {}
-    current_key: str | None = None
-
-    for raw_line in fm_lines:
-        line = raw_line.rstrip()
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-
-        stripped = line.lstrip()
-        if stripped.startswith("- ") and current_key is not None:
-            item = stripped[2:]
-            list_value = data.setdefault(current_key, [])
-            if isinstance(list_value, list):
-                list_value.append(_parse_scalar(item))
-            else:
-                data[current_key] = [list_value, _parse_scalar(item)]
-            continue
-
-        if ":" not in line:
-            continue
-
-        key, value = line.split(":", 1)
-        key = key.strip()
-        value = value.strip()
-
-        if not value:
-            data[key] = []
-            current_key = key
-            continue
-
-        parsed_value = _parse_scalar(value)
-        data[key] = parsed_value
-        current_key = key if isinstance(parsed_value, list) else None
-
-    return data, None
-
-
-def _iso_to_date(value: object) -> date | None:
-    if not isinstance(value, str):
-        return None
-    try:
-        return datetime.fromisoformat(value).date()
-    except ValueError:
-        return None
-
-
-def _exists_rel(base: Path, relative: str) -> bool:
-    candidate = (base / relative).resolve()
-    try:
-        candidate.relative_to(base.resolve())
-    except ValueError:
+    if lowered == "true":
+        return True
+    if lowered == "false":
         return False
-    return candidate.exists()
+    if lowered in {"null", "~"}:
+        return None
+    try:
+        if "." in value or "e" in value.lower():
+            return float(value)
+        return int(value)
+    except ValueError:
+        return value
 
 
-@dataclass
-class DocumentEvaluation:
-    path: str
-    ok: bool
-    issues: List[str]
-    notes: List[str]
-    frontmatter: Dict[str, object] | None
-    freshness_days: int | None
-    stale: bool
-
-
-def evaluate_doc(path: Path, base: Path) -> DocumentEvaluation:
-    rel_path = path.relative_to(base)
-    frontmatter, err = parse_frontmatter(path)
-    issues: List[str] = []
-    notes: List[str] = []
-
-    if err or frontmatter is None:
-        issues.append(err or "frontmatter_error")
-        return DocumentEvaluation(
-            path=str(rel_path),
-            ok=False,
-            issues=issues,
-            notes=notes,
-            frontmatter=None,
-            freshness_days=None,
-            stale=False,
-        )
-
-    missing_fields = [field for field in REQUIRED_FIELDS if field not in frontmatter]
-    if missing_fields:
-        issues.append(f"missing_fields:{missing_fields}")
-
-    owner = frontmatter.get("owner")
-    if owner != OWNER_REQ:
-        issues.append(f"owner_invalid:{owner}")
-
-    version = frontmatter.get("version")
-    if version != VERSION_REQ:
-        issues.append(f"version_invalid:{version}")
-
-    updated_date = _iso_to_date(frontmatter.get("updated"))
-    freshness_days = None
-    if updated_date is None:
-        issues.append("updated_invalid_or_missing")
-    else:
-        today = datetime.utcnow().date()
-        if updated_date > today:
-            issues.append("updated_in_future")
-        freshness_days = (today - updated_date).days
-
-    review_due = _iso_to_date(frontmatter.get("review_due"))
-    if review_due is None:
-        issues.append("review_due_invalid_or_missing")
-    elif updated_date is not None and review_due > updated_date + timedelta(days=REVIEW_WINDOW_DAYS):
-        issues.append("review_due_exceeds_90d")
-
-    layer = frontmatter.get("layer")
-    if not layer:
-        issues.append("layer_missing")
-    status = frontmatter.get("status")
-    if not status:
-        issues.append("status_missing")
-    phase = frontmatter.get("phase")
-    if not phase:
-        issues.append("phase_missing")
-
-    dependencies = frontmatter.get("dependencies") or []
-    if isinstance(dependencies, str):
-        dependencies = [dependencies]
-    linked_docs = frontmatter.get("linked_docs") or []
-    if isinstance(linked_docs, str):
-        linked_docs = [linked_docs]
-
-    missing_deps = [dep for dep in dependencies if not _exists_rel(base, dep)]
-    if missing_deps:
-        issues.append(f"missing_dependencies:{missing_deps}")
-
-    missing_links = [doc for doc in linked_docs if not _exists_rel(base, doc)]
-    if missing_links:
-        issues.append(f"missing_linked_docs:{missing_links}")
-
-    stale = False
-    if updated_date is not None and dependencies:
-        newer_deps = []
-        for dep in dependencies:
-            dep_path = base / dep
-            if not dep_path.exists():
-                continue
-            dep_frontmatter, dep_err = parse_frontmatter(dep_path)
-            if dep_err or not dep_frontmatter:
-                continue
-            dep_updated = _iso_to_date(dep_frontmatter.get("updated"))
-            if dep_updated and dep_updated > updated_date:
-                newer_deps.append({"dep": dep, "dep_updated": str(dep_updated)})
-        if newer_deps:
-            stale = True
-            issues.append(f"stale_due_to_deps:{newer_deps}")
-
-    frontmatter_snapshot = {
-        "title": frontmatter.get("title"),
-        "version": version,
-        "status": status,
-        "phase": phase,
-        "owner": owner,
-        "updated": str(updated_date) if updated_date else None,
-        "review_due": str(review_due) if review_due else None,
-        "retention": frontmatter.get("retention"),
-        "dependencies": dependencies,
-        "linked_docs": linked_docs,
-        "layer": layer,
-        "policy_source": frontmatter.get("policy_source"),
-        "policy_version": frontmatter.get("policy_version"),
-        "review_status": frontmatter.get("review_status"),
-    }
-
-    return DocumentEvaluation(
-        path=str(rel_path),
-        ok=not issues,
-        issues=issues,
-        notes=notes,
-        frontmatter=frontmatter_snapshot,
-        freshness_days=freshness_days,
-        stale=stale,
-    )
-
-
-def run_screening(base_path: Path | str = Path(".")) -> Dict[str, object]:
-    base = Path(base_path).resolve()
-    markdowns = sorted({path.resolve() for path in collect_markdowns(base)})
-    evaluations = [evaluate_doc(path, base) for path in markdowns]
-
-    passed = [doc for doc in evaluations if doc.ok]
-    failed = [doc for doc in evaluations if not doc.ok]
-    stale_count = sum(1 for doc in evaluations if doc.stale)
-    freshness_values = [doc.freshness_days for doc in evaluations if doc.freshness_days is not None]
-    max_fresh = max(freshness_values) if freshness_values else None
-    avg_fresh = (
-        round(sum(freshness_values) / len(freshness_values), 1) if freshness_values else None
-    )
-
-    codeowners = check_codeowners(base)
-
-    summary = {
-        "scanned_files": len(evaluations),
-        "passed": len(passed),
-        "failed": len(failed),
-        "stale": stale_count,
-        "docs_freshness_max_days": max_fresh,
-        "docs_freshness_avg_days": avg_fresh,
-        "codeowners": codeowners,
-        "timestamp_utc": datetime.utcnow().isoformat(timespec="seconds") + "Z",
-        "rules": {
-            "required_fields": REQUIRED_FIELDS,
-            "owner_required": OWNER_REQ,
-            "version_required": VERSION_REQ,
-            "review_due_window_days": REVIEW_WINDOW_DAYS,
-        },
-    }
-
-    return {
-        "summary": summary,
-        "results": [doc.__dict__ for doc in evaluations],
-    }
-
-
-def write_reports(base_path: Path | str = Path(".")) -> Path:
-    base = Path(base_path)
-    artefacts_dir = base / "artefacts"
-    artefacts_dir.mkdir(parents=True, exist_ok=True)
-
-    report = run_screening(base)
-
-    json_path = artefacts_dir / "screening_report.json"
-    json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-
-    def _badge(ok: bool) -> str:
-        return "✅" if ok else "❌"
-
-    lines: List[str] = []
-    summary = report["summary"]
-    lines.append("# Repo Screening Report · v3.1\n")
-    lines.append(f"- Timestamp (UTC): {summary['timestamp_utc']}")
-    lines.append(
-        f"- Files: {summary['scanned_files']} · Pass: {summary['passed']} · Fail: {summary['failed']} · Stale: {summary['stale']}"
-    )
-    if summary["docs_freshness_avg_days"] is not None:
-        lines.append(
-            f"- Docs Freshness: avg {summary['docs_freshness_avg_days']} d · max {summary['docs_freshness_max_days']} d\n"
-        )
-    lines.append("## CODEOWNERS\n")
-    codeowners = summary["codeowners"]
-    if codeowners.get("path"):
-        lines.append(f"- Path: `{codeowners['path']}`")
-        if codeowners.get("issues"):
-            lines.append(f"- Issues: {codeowners['issues']}")
+def _simple_yaml_parse(text):
+    root = {}
+    stack = [(-1, root)]
+    for raw in text.splitlines():
+        line = raw.split("#", 1)[0].rstrip()
+        if not line.strip():
+            continue
+        indent = len(line) - len(line.lstrip(" "))
+        line = line.strip()
+        if ":" not in line:
+            raise ValueError(f"Unsupported YAML line: {raw}")
+        key, rest = line.split(":", 1)
+        key = key.strip()
+        rest = rest.strip()
+        while stack and indent <= stack[-1][0]:
+            stack.pop()
+        parent = stack[-1][1]
+        if rest == "":
+            value = {}
+            parent[key] = value
+            stack.append((indent, value))
         else:
-            lines.append("- Issues: none")
-    else:
-        lines.append("- ❌ CODEOWNERS file missing")
-    lines.append("\n## Files\n")
-
-    for doc in report["results"]:
-        frontmatter = doc.get("frontmatter") or {}
-        lines.append(f"### {_badge(doc['ok'])} `{doc['path']}`")
-        lines.append(
-            "- title: {title} · version: {version} · status: {status} · phase: {phase} · layer: {layer}".format(
-                title=frontmatter.get("title"),
-                version=frontmatter.get("version"),
-                status=frontmatter.get("status"),
-                phase=frontmatter.get("phase"),
-                layer=frontmatter.get("layer"),
-            )
-        )
-        lines.append(
-            "- owner: {owner} · updated: {updated} · review_due: {review_due} · freshness_days: {freshness}".format(
-                owner=frontmatter.get("owner"),
-                updated=frontmatter.get("updated"),
-                review_due=frontmatter.get("review_due"),
-                freshness=doc.get("freshness_days"),
-            )
-        )
-        if doc.get("stale"):
-            lines.append("- **STALE**: deps newer than self")
-        if doc.get("issues"):
-            lines.append(f"- issues: {doc['issues']}")
-        deps = frontmatter.get("dependencies") or []
-        links = frontmatter.get("linked_docs") or []
-        if deps:
-            lines.append(f"- deps: {deps}")
-        if links:
-            lines.append(f"- linked_docs: {links}")
-        lines.append("")
-
-    markdown_path = artefacts_dir / "screening_report.md"
-    markdown_path.write_text("\n".join(lines), encoding="utf-8")
-
-    return markdown_path
+            parent[key] = _parse_scalar(rest)
+    return root
 
 
-def main() -> None:
-    """Entry point that mirrors the governance screening command."""
+def load_config():
+    path = "configs/telemetry/config.yaml"
+    with open(path, "r", encoding="utf-8") as f:
+        text = f.read()
+    try:
+        import yaml  # type: ignore
+    except Exception:
+        return _simple_yaml_parse(text)
+    return yaml.safe_load(text)
 
-    markdown_path = write_reports(Path("."))
-    print(
-        "Wrote artefacts/screening_report.json and",
-        markdown_path.name,
-        "in",
-        markdown_path.parent,
+
+def compute_health(e, w):
+    mROI = float(e["mROI"])
+    uplift = float(e["Uplift"])
+    delta_mape = float(e.get("delta_mape", e.get("ΔMAPE", 0.0)))
+    freshness = float(e.get("Freshness", 0.0))
+    return (
+        w["mROI"] * mROI
+        + w["uplift"] * uplift
+        + w["delta_mape"] * (1 - delta_mape)
+        + w["freshness"] * freshness
     )
+
+
+def in_01(x):
+    try:
+        xf = float(x)
+    except Exception:
+        return False
+    return 0.0 <= xf <= 1.0
+
+
+def validate_bounds(e):
+    keys = [("mROI", "mROI"), ("Uplift", "Uplift"), ("Freshness", "Freshness")]
+    if "delta_mape" in e:
+        keys.append(("delta_mape", "delta_mape"))
+    elif "ΔMAPE" in e:
+        keys.append(("ΔMAPE", "ΔMAPE"))
+    for k, _ in keys:
+        if not in_01(e.get(k)):
+            raise ValueError(f"out_of_bounds:{k}:{e.get(k)}")
+
+
+def schema_validate(payload):
+    if jsonschema is None:
+        emit("warn", code="jsonschema_missing", msg="jsonschema not installed; skipping strict validation")
+        return
+    with open("artefacts/governance_health_index.schema.json", "r", encoding="utf-8") as f:
+        schema = json.load(f)
+    jsonschema.validate(instance=payload, schema=schema)
+
+
+def parse_args(argv):
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--write", action="store_true", help="write filled entries to _filled/")
+    parser.add_argument(
+        "--strict-window", action="store_true", help="fail if >threshold of entries are stale"
+    )
+    parser.add_argument("--now", type=str, default=None, help="override NOW_UTC (ISO8601)")
+    return parser.parse_args(argv)
+
+
+def main():
+    args = parse_args(sys.argv[1:])
+    cfg = load_config()
+    now = now_utc(args.now)
+    files = sorted(glob.glob("artefacts/health_records/*.json"))
+    if not files:
+        emit("error", code="no_files", msg="No health record files found.")
+        return 2
+
+    weights = cfg["weights"]
+    tolerance = float(cfg["validation"]["tolerance"])
+    window_days = int(cfg["validation"]["review_window_days"])
+    strict_threshold = float(cfg["validation"]["strict_window_threshold"])
+    weighted = bool(cfg["aggregation"]["weighted"])
+    weight_field = cfg["aggregation"]["weight_field"]
+
+    any_error = False
+    aggregate = []
+
+    for fp in files:
+        with open(fp, "r", encoding="utf-8") as handle:
+            data = json.load(handle)
+
+        if data.get("version") != SCHEMA_VERSION:
+            emit(
+                "warn",
+                code="schema_version_mismatch",
+                file=fp,
+                version=data.get("version"),
+                expected=SCHEMA_VERSION,
+            )
+        try:
+            schema_validate(data)
+        except Exception as exc:
+            emit("error", code="schema_validation_failed", file=fp, msg=str(exc))
+            any_error = True
+            continue
+
+        entries = data.get("entries", [])
+        stale = 0
+        filled = {
+            "version": data.get("version"),
+            "health_formula": data.get("health_formula"),
+            "review_window_days": data.get("review_window_days"),
+            "entries": [],
+        }
+
+        for entry in entries:
+            try:
+                validate_bounds(entry)
+            except Exception as exc:
+                emit("error", code="bounds", service=entry.get("service"), msg=str(exc))
+                any_error = True
+                continue
+
+            ts = iso_to_dt(entry["timestamp"])
+            if ts < (now - timedelta(days=window_days)):
+                stale += 1
+                emit("warn", code="stale_entry", service=entry.get("service"), timestamp=entry["timestamp"])
+
+            calculated = compute_health(entry, weights)
+            current = float(entry.get("Health", 0.0))
+            if abs(current - calculated) > tolerance and args.write and current == 0.0:
+                entry["Health"] = round(calculated, 6)
+            entry_health = float(entry.get("Health", calculated))
+            aggregate.append((entry, entry_health, entry.get(weight_field, 1.0)))
+            filled["entries"].append(entry)
+
+        if args.write:
+            out_dir = "artefacts/health_records/_filled"
+            os.makedirs(out_dir, exist_ok=True)
+            out_fp = os.path.join(out_dir, os.path.basename(fp))
+            with open(out_fp, "w", encoding="utf-8") as handle:
+                json.dump(filled, handle, ensure_ascii=False, indent=2)
+
+        ratio_stale = (stale / len(entries)) if entries else 0.0
+        if args.strict_window and ratio_stale > strict_threshold:
+            emit("error", code="stale_ratio", file=fp, ratio=ratio_stale)
+            any_error = True
+
+    if aggregate:
+        if weighted:
+            numerator = sum(health * weight for _, health, weight in aggregate)
+            denominator = sum(weight for *_, weight in aggregate) or 1.0
+            avg = numerator / denominator
+        else:
+            avg = sum(health for _, health, _ in aggregate) / len(aggregate)
+
+        emit("info", code="avg_health", value=round(avg, 6))
+        soft = float(cfg["validation"]["min_avg_health_soft"])
+        hard = float(cfg["validation"]["min_avg_health_hard"])
+
+        if avg < hard:
+            emit("error", code="avg_below_hard", hard=hard, avg=avg)
+            any_error = True
+        elif avg < soft:
+            emit("warn", code="avg_below_soft", soft=soft, avg=avg)
+
+    return 1 if any_error else 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
