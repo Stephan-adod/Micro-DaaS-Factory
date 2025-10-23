@@ -1,31 +1,31 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Governance Health Index Schema v3.1-refine-1",
+  "title": "Governance Health Index Schema v3.1-refine-1a",
   "type": "object",
   "properties": {
     "version": { "type": "string", "const": "v3.1-refine-1" },
-    "health_formula": {
-      "type": "string",
-      "const": "(0.4*mROI + 0.3*Uplift + 0.2*(1-ΔMAPE) + 0.1*Freshness)"
-    },
+    "health_formula": { "type": "string" },
     "review_window_days": { "type": "integer", "minimum": 7 },
     "entries": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "properties": {
           "timestamp": { "type": "string", "format": "date-time" },
-          "service": { "type": "string" },
-          "mROI": { "type": "number" },
-          "Uplift": { "type": "number" },
-          "ΔMAPE": { "type": "number" },
-          "Freshness": { "type": "number" },
-          "Health": { "type": "number" },
-          "commit_hash": { "type": "string" }
+          "service": { "type": "string", "minLength": 1 },
+          "mROI": { "type": "number", "minimum": 0, "maximum": 1 },
+          "Uplift": { "type": "number", "minimum": 0, "maximum": 1 },
+          "delta_mape": { "type": "number", "minimum": 0, "maximum": 1 },
+          "ΔMAPE": { "type": "number", "minimum": 0, "maximum": 1 },
+          "Freshness": { "type": "number", "minimum": 0, "maximum": 1 },
+          "Health": { "type": "number", "minimum": 0, "maximum": 1 },
+          "weight": { "type": "number", "minimum": 0 },
+          "commit_hash": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" }
         },
-        "required": ["timestamp", "service", "mROI", "Uplift", "Health"]
+        "required": ["timestamp","service","mROI","Uplift","Health"]
       }
     }
   },
-  "required": ["version", "entries", "health_formula"]
+  "required": ["version","entries","health_formula"]
 }
