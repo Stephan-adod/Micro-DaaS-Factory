@@ -3,6 +3,7 @@ title: AI First Handbook
 version: v3.1
 status: canonical
 phase: enrichment
+governance_phase: Recovery → Stabilization
 owner: stephan-adod
 updated: 2025-10-23
 review_due: 2026-01-21
@@ -16,7 +17,7 @@ linked_docs:
   - meta/AI_First_Roadmap.md
   - meta/Human_in_the_Loop_Playbook.md
   - meta/AI_First_Business_Case.md
-review_status: reviewed
+review_status: pending
 ---
 
 # AI First Handbook (Policy Anchor)

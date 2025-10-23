@@ -3,6 +3,7 @@ title: Human in the Loop Playbook
 version: v3.1
 status: canonical
 phase: enrichment
+governance_phase: Recovery → Stabilization
 owner: stephan-adod
 updated: 2025-10-23
 review_due: 2026-01-21
@@ -18,7 +19,7 @@ dependencies:
 linked_docs:
   - artefacts/governance_health_index.json
   - meta/system_version.json
-review_status: in_progress
+review_status: pending
 ---
 
 # Human in the Loop Playbook (Semantic ↔ Operational Bridge)
