@@ -12,3 +12,8 @@
 - **What:** Operative Phasenstruktur, Rhythmusparameter und KPI-Gates in Roadmap verankert.
 - **Why:** Governance braucht einen überprüfbaren Takt, der Bedeutung in Handlung überführt.
 - **Impact:** Health-gekoppelter Fortschritt (+0.15 erwartet); Roadmap wird zum lernenden Artefakt (Phase Recap).
+
+## 2025-10-23 · Architecture Enrichment (Infrastructure Layer Activation)
+- **What:** Micro DaaS Factory, Value-Flow Map, Telemetry & Chronical Hooks, Resilience (Audit Grace) verankert.
+- **Why:** Governance braucht technische Träger, die Wert, Gesundheit und Lernen koppeln.
+- **Impact:** Health-gekoppelter Fortschritt (+0.15 erwartet); Infrastruktur wird Governance-fähig.
