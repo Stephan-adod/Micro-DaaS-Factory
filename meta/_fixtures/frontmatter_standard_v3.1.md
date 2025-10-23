@@ -1,50 +1,55 @@
 ---
-title: Frontmatter Standard v3.1
+title: Canonical Frontmatter Standard
 version: v3.1
 status: canonical
+updated: 2025-10-23
 owner: stephan-adod
 secondary_owner: ai-core-bot
-updated: 2025-10-23
-review_due: 2026-01-23
+phase: Recovery
+review_due: 2025-12-23
 retention: permanent
 layer: infrastructure
+accountability_scope: meta/_fixtures/*
 policy_source: meta/AI_First_Handbook.md
 policy_version: v3.1
-accountability_scope: meta/*
-notes: "Standardisierte Frontmatter-Struktur für alle Canonical-Dokumente in AI Native Governance v3.1"
+governance_phase: Recovery → Stabilization
+notes: "Referenzdokument – definiert den verbindlichen Frontmatter-Standard für alle Canonicals in v3.1"
 ---
 
-# Frontmatter Standard (v3.1)
+# Canonical Frontmatter Standard · v3.1
 
-Dieses Dokument definiert die verbindliche Struktur und Pflichtfelder für alle Canonical-Dateien im AI-Native Governance Framework v3.1.  
-Ziel ist vollständige maschinelle Lesbarkeit, eindeutige Ownership und automatische Review-Kontrolle.
+Dieses Dokument definiert die verpflichtenden **Frontmatter-Felder** für alle Canonical-Dokumente  
+im Rahmen von *AI Native Governance as Infrastructure v3.1*.
+
+Ziel: Einheitliche, maschinenlesbare und überprüfbare Governance-Metadaten,  
+die technische, semantische und organisatorische Synchronität sicherstellen.
 
 ---
 
-## 🧱 Canonical Frontmatter Template
+## 🧭 Strukturübersicht
 
 ```yaml
 ---
 title: "<Dokumentname>"
 version: "v3.1"
 status: "canonical"           # oder active / draft / archived
-phase: "Recovery"             # aus system_version.json
-owner: "stephan-adod"
-secondary_owner: "ai-core-bot"  # optional
-updated: "2025-10-23"
-review_due: "2025-12-23"
-retention: "permanent"        # oder 12M / 24M
-dependencies:
+phase: "Recovery"             # aktuelle Governance-Phase
+owner: "stephan-adod"         # Hauptverantwortliche Person
+secondary_owner: "ai-core-bot"  # optionale Co-Governance Instanz
+updated: "2025-10-23"         # letztes Änderungsdatum
+review_due: "2025-12-23"      # nächste Review-Fälligkeit
+retention: "permanent"        # oder z.B. "12M", "24M"
+dependencies:                 # abhängige Dateien (Upstream)
   - "meta/AI_First_Handbook.md"
   - "meta/AI_First_Roadmap.md"
-linked_docs:
+linked_docs:                  # assoziierte Dokumente (Downstream)
   - "meta/CORE_INDEX.md"
   - "meta/system_version.json"
 accountability_scope: "meta/*"
 policy_source: "meta/AI_First_Handbook.md"
 policy_version: "v3.1"
 governance_phase: "Recovery → Stabilization"
-layer: "semantic"              # semantic / operational / infrastructure
-review_status: "pending"       # oder ok / overdue
-notes: "Baseline Header für AI-Native Governance v3.1"
+layer: "semantic"             # semantic / operational / infrastructure
+review_status: "pending"      # oder ok / overdue
+notes: "Kurzbeschreibung oder Kontext"
 ---
