@@ -21,7 +21,7 @@ jobs:
 
       - name: "Run validation (PR: soft gate)"
         run: |
-          python artefacts/screening_runner.py --now "${{ github.event.pull_request.updated_at }}"
+          python artefacts/screening_runner.py --gate soft --now "${{ github.event.pull_request.updated_at }}"
 
   validate-main:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -38,4 +38,4 @@ jobs:
 
       - name: "Run validation (main: hard gate, strict window)"
         run: |
-          python artefacts/screening_runner.py --strict-window --now "${{ github.event.head_commit.timestamp }}"
+          python artefacts/screening_runner.py --strict-window --gate hard --now "${{ github.event.head_commit.timestamp }}"

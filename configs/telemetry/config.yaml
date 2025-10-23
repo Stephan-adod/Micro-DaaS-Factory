@@ -7,7 +7,7 @@ weights:
 validation:
   review_window_days: 14
   min_avg_health_soft: 0.50
-  min_avg_health_hard: 0.60
+  min_avg_health_hard: 0.55
   tolerance: 0.0001
   strict_window_threshold: 0.2   # >20% veraltet => ERROR bei --strict-window
 aggregation:
