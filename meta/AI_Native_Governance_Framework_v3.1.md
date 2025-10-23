@@ -167,6 +167,11 @@ Nicht erfüllte Felder = PR-Blocker.
 - Eine Sammelstelle: docs/lessons_core_v3.1.md (optional in Phase 2).
 - Jede Phase-2-Änderung trägt 3 Learnings ein (What/Why/Impact), max. 5 Zeilen je Punkt.
 
+## 15a · Role Feedback Integration (Phase 2+)
+- Jede Phase-2-Änderung erzeugt mindestens ein *Human-in-the-Loop*-Signal (Owner Review, Lessons, Approval).
+- Die Zuordnung Owner ⇄ AI ⇄ Codex ⇄ Repo wird im *meta/Human_in_the_Loop_Playbook.md* dokumentiert.
+- Lessons werden mit PR-Metadaten verknüpft (Intent, Scope, Impact, Commit-Tag).
+
 ## 16 · Definition of Ready (Phase 2)
 Vor Start von Phase 2 müssen stehen:
 - CORE_INDEX vollständig
@@ -175,3 +180,8 @@ Vor Start von Phase 2 müssen stehen:
 - governance_manifest_schema_v3.1.json akzeptiert Frontmatter-Felder
 - PR-Template, CODEOWNERS, Commit-Conventions vorhanden
 
++## 16a · Definition of Roles (Canonical)
+- **Owner:** strategisch & semantisch verantwortlich (Intent, Review, Lessons, Gates).
+- **AI Partner (ChatGPT):** semantische Übersetzung & Strukturbildung (Scaffold, Policy-Text).
+- **Codex App:** technische Implementierung (Writes, PR-Erstellung) unter CI/Schema-Guards.
+- **Repo (CI & Guards):** Governance-Validator (Schema, Links, Owner, Dates).
