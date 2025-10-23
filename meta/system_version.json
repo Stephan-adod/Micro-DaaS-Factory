@@ -1,0 +1,29 @@
+{
+  "version": "v3.1",
+  "target_version": "v3.1",
+  "active": "v3.1",
+  "phase": "Recovery",
+  "phase_goal": "Stabiler Minimal-Kern aktiv",
+  "health_score": 0.0,
+  "updated": "2025-10-23",
+  "updated_at": "2025-10-23",
+  "policy_source": "meta/AI_First_Handbook.md",
+  "pointers": {
+    "core_docs": [
+      "meta/AI_First_Handbook.md",
+      "meta/AI_First_Roadmap.md",
+      "meta/AI_First_System_Architecture.md",
+      "meta/Human_in_the_Loop_Playbook.md",
+      "meta/governance_recovery_bootstrap_v3.1.md",
+      "meta/governance_manifest_schema_v3.1.json",
+      "meta/system_version.json",
+      "docs/AI_First_Business_Case.md",
+      "artefacts/governance_health_index.json"
+    ]
+  },
+  "features": {
+    "context_pack": false,
+    "pr_synthesizer": false,
+    "drift_sentry": false
+  }
+}
