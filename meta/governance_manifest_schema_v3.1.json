@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Governance Manifest Schema v3.1 (minimal)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target_version", "phase", "policy_sources", "core_links"],
+  "properties": {
+    "target_version": { "type": "string", "pattern": "^v\\d+\\.\\d+(\\.\\d+)?$" },
+    "phase": { "type": "string", "enum": ["Recovery", "Stabilization", "Continuous"] },
+    "policy_sources": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^meta/.+\\.md$" },
+      "minItems": 1
+    },
+    "owners": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "core_links": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "handbook", "roadmap", "architecture", "playbook",
+        "bootstrap", "schema", "system_version", "business_case"
+      ],
+      "properties": {
+        "handbook":       { "type": "string", "pattern": "^meta/AI_First_Handbook\\.md$" },
+        "roadmap":        { "type": "string", "pattern": "^meta/AI_First_Roadmap\\.md$" },
+        "architecture":   { "type": "string", "pattern": "^meta/AI_First_System_Architecture\\.md$" },
+        "playbook":       { "type": "string", "pattern": "^meta/Human_in_the_Loop_Playbook\\.md$" },
+        "bootstrap":      { "type": "string", "pattern": "^meta/governance_recovery_bootstrap_v3\\.1\\.md$" },
+        "schema":         { "type": "string", "pattern": "^meta/governance_manifest_schema_v3\\.1\\.json$" },
+        "system_version": { "type": "string", "pattern": "^meta/system_version\\.json$" },
+        "business_case":  { "type": "string", "pattern": "^(meta|docs)/AI_First_Business_Case\\.md$" }
+      }
+    }
+  }
+}

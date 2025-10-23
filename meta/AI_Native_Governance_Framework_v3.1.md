@@ -24,7 +24,7 @@ Ziel ist ein System, das:
 | Layer | Datei | Zweck |
 |--------|--------|--------|
 | **Semantic Layer** | `meta/AI_First_Handbook.md` | Policy-Quelle, Begriffe, Hard Rules |
-|  | `docs/AI_First_Business_Case.md` | Wirtschaftlichkeit & KPI-Definition |
+|  | `meta/AI_First_Business_Case.md` | Wirtschaftlichkeit & KPI-Definition |
 | **Operational Layer** | `meta/AI_First_Roadmap.md` | Phasen- und Zeitsteuerung |
 |  | `meta/Human_in_the_Loop_Playbook.md` | Human Override, Lifestyle-Balance |
 |  | `meta/governance_recovery_bootstrap_v3.1.md` | Loops A/B/C + Gates |
