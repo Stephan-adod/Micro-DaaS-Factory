@@ -1,9 +1,25 @@
 ---
-title: Human-in-the-Loop Playbook
-version: v3.1
-status: canonical
-updated: 2025-10-23
-owner: stephan-adod
+title: "Human-in-the-Loop Playbook"
+version: "v3.1"
+status: "canonical"
+phase: "Recovery"
+owner: "stephan-adod"
+secondary_owner: "ai-core-bot"
+updated: "2025-10-23"
+review_due: "2025-12-22"
+retention: "12M"
+dependencies:
+  - "meta/AI_First_Handbook.md"
+linked_docs:
+  - "meta/AI_First_Roadmap.md"
+  - "meta/AI_First_System_Architecture.md"
+accountability_scope: "meta/*"
+policy_source: "meta/AI_First_Handbook.md"
+policy_version: "v3.1"
+governance_phase: "Recovery → Stabilization"
+layer: "operational"
+review_status: "pending"
+notes: "Lifestyle guards + freeze/override"
 ---
 
 # HITL Playbook
