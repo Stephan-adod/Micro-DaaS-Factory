@@ -32,11 +32,16 @@
 Canonicals stabil unter `/meta`, Guard grün.  
 Risiko: bei Neuentwicklungen Meta-Kanon mitführen → Task-Evidence-Pflichtfeld *canonical*.  
 
-**Lessons Core v3.1:**  
-Integration für spätere Phase 3 geplant, Übergang zu Phase 4 via `/meta/`.  
+**Lessons Core v3.1:**
+Integration für spätere Phase 3 geplant, Übergang zu Phase 4 via `/meta/`.
 
-**Health ≥ 0.8 Strategie:**  
-1. Telemetry-Weighting (Uplift + ΔMAPE + Freshness)  
+**Lessons Core v3.1 Anschlussfähigkeit**
+- Sammlung & Struktur laufender Lessons erfolgt in `docs/lessons_core_v3.1.md` (operativ).
+- Konsolidierung geplant in später Phase 3; Übergang des konsolidierten Kerns nach `/meta/` in Phase 4.
+- Ziel: klare Brücke von Lern-Artefakten (docs) zum Governance-Kanon (meta).
+
+**Health ≥ 0.8 Strategie:**
+1. Telemetry-Weighting (Uplift + ΔMAPE + Freshness)
 2. Task-Closure-Ratio  
 3. Lesson-Density  
 

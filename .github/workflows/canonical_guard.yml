@@ -8,6 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check roadmap approval evidence path exists (if referenced)
+        run: |
+          if grep -q '"Approve Phase 3 Roadmap"' artefacts/tasks_index.json; then
+            if grep -q 'docs/phase3_operational_plan.md' artefacts/tasks_index.json; then
+              test -f docs/phase3_operational_plan.md || (echo "::error::Missing evidence file docs/phase3_operational_plan.md" && exit 1)
+            fi
+          fi
       - name: Check canonical files exist
         run: |
           test -f meta/AI_First_Handbook.md
