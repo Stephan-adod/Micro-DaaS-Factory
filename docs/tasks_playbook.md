@@ -17,6 +17,33 @@ Transparente, CI-überwachte To-Do-Liste für wiederkehrende und einmalige Owner
 - [ ] Falls `evidence_required: true` → mindestens **ein** Eintrag in `evidence`
 - [ ] Für `recurring`: `next_due` gesetzt (entweder aus `interval_days` oder `rrule` berechnet)
 
+---
+
+## Execution Context Policy (Phase 3+)
+
+### 1. Governance vs. Execution
+- **Governance Activities (ChatGPT / Codex):**
+  - Reviews, Prompts, Codex Changes, Lessons
+  - Owner-Steuerung, Reflexion, Prozessentscheidungen
+- **Execution Activities (Codespace / CI):**
+  - Make-Targets, CLI-Befehle, Tests, Commits
+  - Code- und Dateiänderungen, technische Validierungen
+
+### 2. Übergabeprinzip
+- ChatGPT generiert und reviewed Prompts (Governance Layer).
+- Owner führt technische Befehle oder Tests im Codespace aus (Execution Layer).
+- Nach erfolgreichem Merge meldet ChatGPT den neuen Governance-Zustand zurück.
+
+### 3. Sichtbarkeitsregel
+- Jede Aktion im Codespace erzeugt einen Commit, PR oder Tag → sichtbarer Systemzustand.
+- ChatGPT darf niemals implizit annehmen, dass Code ausgeführt wurde.
+- Nur bestätigte Merges gelten als Governance-Fakt.
+
+### 4. Vorteile
+- Klare Rollenverteilung: ChatGPT = Prozessführung, Owner = Ausführung.
+- Bessere Nachvollziehbarkeit zwischen Plan und Umsetzung.
+- Grundlage für Health-Telemetry-Differenzierung (Governance vs. Execution).
+
 ## Rollen / RACI (Phase 3)
 - **Owner:** stephan-adod (entscheidet, priorisiert, bestätigt DoD)
 - **System (CI):** prüft Blocker/Dependencies/Evidence, erzwingt Policy auf **main**
