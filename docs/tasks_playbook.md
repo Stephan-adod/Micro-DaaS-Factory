@@ -15,10 +15,12 @@ Transparente, CI-überwachte To-Do-Liste für wiederkehrende und einmalige Owner
 2. **Abhängigkeiten** per `depends_on` pflegen; erst abschließen, wenn Vorgänger `done|skipped`
 3. **Erledigen** ⇒ `status: done` + (falls `evidence_required`) **Nachweis** in `evidence` verlinken
 4. **Recurring** ⇒ `interval_days` ODER `rrule` setzen; bei Abschluss Next-Due planen
-5. **CI prüft** bei PR/main & täglich (Schedule); **failt** bei:
-   - offenen/überfälligen `blocking` Tasks
-   - **unmet dependencies**
-   - `evidence_required` aber **keine Evidence**
+5. **CI prüft**:
+   - **PR (Soft Mode):** nur informativ, **kein Fail** bei offenen Blockern
+   - **main / schedule / workflow_dispatch:** **Fail**, wenn:
+     - offenen/überfälligen `blocking` Tasks
+     - **unmet dependencies**
+     - `evidence_required` aber **keine Evidence**
 6. **Tipps**: IDs fortlaufend, `priority` nutzen (P0=kritisch), kleine Einheiten bevorzugen
 
 ## Beispiele
