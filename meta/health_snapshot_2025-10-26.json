@@ -1,0 +1,9 @@
+{
+  "date": "2025-10-26",
+  "phase": "Stabilization",
+  "cycle": 1,
+  "avg_health": 0.551,
+  "gate": "hard",
+  "status": "stable-window-confirmed",
+  "note": "Baseline konstant – Übergang zu Cycle 2 erlaubt."
+}
