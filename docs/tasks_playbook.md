@@ -11,10 +11,15 @@ Transparente, CI-überwachte To-Do-Liste für wiederkehrende und einmalige Owner
 - `evidence`: Dateien/Links als Nachweis
 
 ## Workflow
-1. **Aufgabe anlegen/ändern** in `artefacts/tasks_index.json`
-2. **Erledigen** ⇒ `status: done` setzen, optional `last_run`/`next_due` aktualisieren
-3. **CI prüft** bei PR/main und täglich per Schedule
-4. **Blocking-Policy**: Offene/überfällige `blocking: true` ⇒ CI failt (main)
+1. **Aufgabe anlegen/ändern** in `artefacts/tasks_index.json` (UTC/ISO-8601 mit `Z` oder Offset)
+2. **Abhängigkeiten** per `depends_on` pflegen; erst abschließen, wenn Vorgänger `done|skipped`
+3. **Erledigen** ⇒ `status: done` + (falls `evidence_required`) **Nachweis** in `evidence` verlinken
+4. **Recurring** ⇒ `interval_days` ODER `rrule` setzen; bei Abschluss Next-Due planen
+5. **CI prüft** bei PR/main & täglich (Schedule); **failt** bei:
+   - offenen/überfälligen `blocking` Tasks
+   - **unmet dependencies**
+   - `evidence_required` aber **keine Evidence**
+6. **Tipps**: IDs fortlaufend, `priority` nutzen (P0=kritisch), kleine Einheiten bevorzugen
 
 ## Beispiele
 - Health Report (recurring, 14d): Nach Erzeugung Report-Datei als `evidence` verlinken

@@ -30,12 +30,14 @@ jobs:
       - name: Run tasks monitor (PR)
         id: monitor
         run: |
-          python artefacts/tasks_monitor.py | tee tasks.jsonl
+          python artefacts/tasks_monitor.py --now "${{ github.event.pull_request.updated_at }}" | tee tasks.jsonl
       - name: Summary (PR)
         run: |
           {
             echo "## Human-in-the-Loop Task Check (PR)"
             echo "- Blocking open: $(grep -c 'open_or_overdue_blocking' tasks.jsonl || true)"
+            echo "- Dep errors: $(grep -c 'unmet_dependencies' tasks.jsonl || true)"
+            echo "- Evidence errors: $(grep -c 'evidence_missing' tasks.jsonl || true)"
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload task log
         uses: actions/upload-artifact@v4
@@ -58,12 +60,15 @@ jobs:
       - name: Run tasks monitor (main, blocking)
         id: monitor
         run: |
-          python artefacts/tasks_monitor.py | tee tasks.jsonl
+          NOW="${{ github.event.head_commit.timestamp }}"
+          python artefacts/tasks_monitor.py --now "${NOW}" | tee tasks.jsonl
       - name: Summary (main)
         run: |
           {
             echo "## Human-in-the-Loop Task Check (main)"
             echo "- Blocking open: $(grep -c 'open_or_overdue_blocking' tasks.jsonl || true)"
+            echo "- Dep errors: $(grep -c 'unmet_dependencies' tasks.jsonl || true)"
+            echo "- Evidence errors: $(grep -c 'evidence_missing' tasks.jsonl || true)"
             echo ""
             echo "_Hinweis: Pipeline FAILt, solange blockierende Tasks offen/überfällig sind._"
           } >> "$GITHUB_STEP_SUMMARY"

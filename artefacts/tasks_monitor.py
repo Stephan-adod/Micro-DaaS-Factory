@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import importlib
 import json
 import os
@@ -24,7 +25,9 @@ INDEX_PATH = "artefacts/tasks_index.json"
 def iso(s):
   return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
-def now_utc():
+def now_utc(override=None):
+  if override:
+    return iso(override)
   env = os.getenv("NOW_UTC", "").strip()
   return iso(env) if env else datetime.now(timezone.utc)
 
@@ -40,16 +43,41 @@ def validate_schema(index):
   jsonschema.validate(instance=index, schema=schema)
   return True
 
+def duplicate_ids(tasks):
+  seen = set()
+  dups = set()
+  for t in tasks:
+    ident = t.get("id")
+    if ident in seen:
+      dups.add(ident)
+    seen.add(ident)
+  return sorted(dups)
+
+def unmet_dependencies(task, status_by_id):
+  deps = task.get("depends_on") or []
+  return [dep for dep in deps if status_by_id.get(dep) not in ("done", "skipped")]
+
 def evaluate(index, ref_now):
   tasks = index.get("tasks", [])
+  dups = duplicate_ids(tasks)
+  status_by_id = {t.get("id"): t.get("status") for t in tasks}
   open_blocking = []
   warnings = []
+  dep_errors = []
+  evidence_errors = []
   for t in tasks:
     status = t.get("status")
     blocking = bool(t.get("blocking", True))
     due = t.get("due")
     next_due = t.get("next_due")
     t_due = iso(next_due or due) if (next_due or due) else None
+
+    missing = unmet_dependencies(t, status_by_id)
+    if missing:
+      dep_errors.append({"id": t.get("id"), "title": t.get("title"), "missing": missing})
+
+    if t.get("evidence_required") and status == "done" and not t.get("evidence"):
+      evidence_errors.append({"id": t.get("id"), "title": t.get("title")})
 
     if status in ("done", "skipped"):
       continue
@@ -63,9 +91,9 @@ def evaluate(index, ref_now):
       if t_due and ref_now > t_due:
         warnings.append((t["id"], t["title"], "nonblocking_overdue", t_due.isoformat()))
 
-  return open_blocking, warnings
+  return open_blocking, warnings, dups, dep_errors, evidence_errors
 
-def print_summary(open_blocking, warnings):
+def print_summary(open_blocking, warnings, dups, dep_errors, evidence_errors):
   def row(code, rec):
     return {
       "level": "error" if code.startswith("open") else "warn",
@@ -76,6 +104,12 @@ def print_summary(open_blocking, warnings):
     }
 
   logs = []
+  for ident in dups:
+    logs.append({"level": "error", "code": "duplicate_id", "id": ident})
+  for dep in dep_errors:
+    logs.append({"level": "error", "code": "unmet_dependencies", "id": dep["id"], "missing": dep["missing"]})
+  for evidence in evidence_errors:
+    logs.append({"level": "error", "code": "evidence_missing", "id": evidence["id"], "title": evidence["title"]})
   for r in open_blocking:
     logs.append(row("open_or_overdue_blocking", r))
   for w in warnings:
@@ -83,16 +117,27 @@ def print_summary(open_blocking, warnings):
   for l in logs:
     print(json.dumps(l))
   print(json.dumps({"level": "info", "code": "open_blocking_count", "value": len(open_blocking)}))
-  return len(open_blocking)
+  print(json.dumps({"level": "info", "code": "dup_count", "value": len(dups)}))
+  print(json.dumps({"level": "info", "code": "dep_error_count", "value": len(dep_errors)}))
+  print(json.dumps({"level": "info", "code": "evidence_error_count", "value": len(evidence_errors)}))
+  return len(open_blocking) + len(dups) + len(dep_errors) + len(evidence_errors)
+
+def parse_args(argv):
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--now", type=str, default=None, help="override NOW_UTC (ISO8601)")
+  parser.add_argument("--complete", type=str, default=None, help="mark task id as done (no writeback; policy-only)")
+  parser.add_argument("--snooze", type=str, default=None, help="task id to snooze (no writeback; policy-only)")
+  return parser.parse_args(argv)
 
 def main():
-  ref_now = now_utc()
+  args = parse_args(sys.argv[1:])
+  ref_now = now_utc(args.now)
   try:
     index = load_json(INDEX_PATH)
     validate_schema(index)
-    open_blocking, warnings = evaluate(index, ref_now)
-    count = print_summary(open_blocking, warnings)
-    if count > 0:
+    open_blocking, warnings, dups, dep_errors, evidence_errors = evaluate(index, ref_now)
+    hard_errors = print_summary(open_blocking, warnings, dups, dep_errors, evidence_errors)
+    if hard_errors > 0:
       return 1
     return 0
   except Exception as ex:

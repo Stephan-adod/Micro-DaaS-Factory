@@ -24,6 +24,12 @@
           "last_run": { "type": "string", "format": "date-time" },
           "next_due": { "type": "string", "format": "date-time" },
           "owner": { "type": "string" },
+          "priority": { "type": "string", "enum": ["P0","P1","P2"], "default": "P1" },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^T-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}$" }
+          },
+          "evidence_required": { "type": "boolean", "default": false },
           "evidence": {
             "type": "array",
             "items": { "type": "string" }
@@ -37,5 +43,15 @@
       }
     }
   },
-  "required": ["version","owner","tasks"]
+  "required": ["version","owner","tasks"],
+  "allOf": [
+    {
+      "description": "Recurring tasks müssen interval_days oder rrule besitzen",
+      "if": { "properties": { "tasks": { "items": { "properties": { "type": { "const": "recurring" } } } } } },
+      "then": { "properties": { "tasks": { "items": { "anyOf": [
+        { "required": ["interval_days"] },
+        { "required": ["rrule"] }
+      ] } } } }
+    }
+  ]
 }
