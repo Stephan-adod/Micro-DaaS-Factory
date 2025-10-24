@@ -1,0 +1,9 @@
+{
+  "id": "T-2025-10-26-01",
+  "title": "Cycle 2 Kick-off (Stabilization)",
+  "type": "one_time",
+  "status": "open",
+  "created": "2025-10-26",
+  "assigned_to": "stephan-adod",
+  "description": "Starte Cycle 2 nach bestätigter Baseline Health ≈ 0.55. Ziel: Guided Mode um Toolflow erweitern (Loop B #3 Vorbereitung)."
+}
