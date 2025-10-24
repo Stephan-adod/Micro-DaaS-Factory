@@ -4,6 +4,13 @@
     { "path": "meta/AI_First_Handbook.md", "title": "AI First Handbook", "type": "handbook" },
     { "path": "meta/Human_in_the_Loop_Playbook.md", "title": "Human-in-the-Loop Playbook", "type": "playbook" }
   ],
+  "phase_status": {
+    "phase": "Stabilization",
+    "approved": true,
+    "approved_at": "2025-10-26T09:00:00Z",
+    "health_baseline": 0.55,
+    "target_health": 0.8
+  },
   "operational_docs": [
     { "path": "docs/tasks_playbook.md", "title": "Tasks – Operational How-To", "type": "howto" }
   ]
