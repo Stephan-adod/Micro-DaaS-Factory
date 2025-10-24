@@ -143,8 +143,35 @@ Hook-Level: `semantic-operational · enrichment · v3.1`
 ---
 
 ## 10 · Meta-Note (Stephan Style)
-> Der Mensch ist kein Operator, sondern das Gleichgewicht.  
-> Zehn Stunden sind nicht wenig – sie sind die Form von Verantwortung.  
->  
-> Ethik ist nicht Korrektur, sondern Ursprung.  
+> Der Mensch ist kein Operator, sondern das Gleichgewicht.
+> Zehn Stunden sind nicht wenig – sie sind die Form von Verantwortung.
+>
+> Ethik ist nicht Korrektur, sondern Ursprung.
 > Dieses Playbook bewahrt, dass Governance nicht nur funktioniert – sie bleibt menschlich.
+
+## Definition of Done (DoD)
+- Task abgeschlossen und als „done“ markiert
+- Evidence vorhanden (Lessons / Artefakte)
+- CI-Checks grün
+- Owner bestätigt Ergebnis
+
+---
+
+## Execution Context Policy (Phase 3+)
+
+### 1. Governance vs. Execution
+- **Governance (ChatGPT / Codex):** Reviews, Prompts, Codex Changes, Lessons; Entscheidungen & Reflexion.
+- **Execution (Codespace / CI):** Make-Targets, CLI-Befehle, Tests, Commits; technische Validierung.
+
+### 2. Übergabeprinzip
+- ChatGPT generiert/reviewt Prompts (Governance).  
+- Owner führt Befehle im Codespace aus (Execution).  
+- Nach Merge wird der neue Governance-Zustand zurückgespiegelt.
+
+### 3. Sichtbarkeitsregel
+- Jede Codespace-Aktion erzeugt Commit/PR/Tag (sichtbarer Zustand).  
+- ChatGPT nimmt keine verdeckte Ausführung an.  
+- Nur bestätigte Merges gelten als Governance-Fakt.
+
+### 4. Vorteile
+- Klare Rollenverteilung, bessere Nachvollziehbarkeit, Telemetry-Trennschärfe.

@@ -1,0 +1,28 @@
+name: Canonical Guard
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check canonical files exist
+        run: |
+          test -f meta/AI_First_Handbook.md
+          test -f meta/Human_in_the_Loop_Playbook.md
+          test -f meta/system_index.json
+      - name: No rogue canonicals in /docs
+        run: |
+          if ls docs/*handbook*.md docs/*playbook*.md 2>/dev/null; then
+            echo "::error::Potential canonical files found in /docs"; exit 1;
+          fi
+          exit 0
+      - name: Tasks doc has banner
+        run: |
+          grep -q "Canonical Source: \`meta/Human_in_the_Loop_Playbook.md\`" docs/tasks_playbook.md
+      - name: Index lists canonicals
+        run: |
+          grep -q "AI_First_Handbook.md" meta/system_index.json
+          grep -q "Human_in_the_Loop_Playbook.md" meta/system_index.json

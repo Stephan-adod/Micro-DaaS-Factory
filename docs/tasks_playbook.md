@@ -1,3 +1,6 @@
+> **Canonical Source:** `meta/Human_in_the_Loop_Playbook.md`  
+> Dieses Dokument ist ein **operatives How-To** für Task-Index/CLI (Nicht-Canonical).
+
 # Tasks Playbook (Human-in-the-Loop) · v3.1
 
 ## Ziel

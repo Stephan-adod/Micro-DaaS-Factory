@@ -86,6 +86,34 @@ Hook-Level: `semantic · enrichment · v3.1`
 **Impact:** Policy wird von Dokument zu Infrastruktur.
 
 ## 10 · Meta-Note (Stephan Style)
-> Sprache ist der Code der Governance.  
-> Wenn Bedeutung maschinenlesbar wird, entsteht Selbststeuerung.  
+> Sprache ist der Code der Governance.
+> Wenn Bedeutung maschinenlesbar wird, entsteht Selbststeuerung.
 > Dieses Handbook ist der semantische Quellcode des Core-Systems.
+
+## Owner Roles & Interfaces
+Der Owner trägt die Gesamtverantwortung für Governance-Gesundheit, Qualität und Rhythmus.
+ChatGPT agiert als semantischer Co-Pilot in Entscheidungs- und Reflexionsprozessen.
+
+---
+
+### Guided Execution Mode (ChatGPT + Codespace)
+
+**Zweck**  
+Dieses Framework unterstützt Owner ohne Entwicklerhintergrund beim sicheren Arbeiten im Codespace.
+ChatGPT übernimmt die Rolle des „Navigators“: Es beschreibt präzise, welche Schritte im Codespace nötig sind,
+erklärt deren Bedeutung und begleitet die Ausführung Schritt für Schritt.
+
+**Grundprinzipien**  
+1. ChatGPT führt, der Owner entscheidet und bestätigt.  
+2. Jeder Befehl wird erst erklärt, dann kopier-fertig angeboten.  
+3. Keine Hintergrundaktionen – alles transparent, Schritt für Schritt.  
+4. Codespace ist Execution-Ebene; Governance-Entscheidungen bleiben in ChatGPT/Codex.  
+5. Nach Ausführung meldet der Owner „done“; ChatGPT spiegelt den neuen Governance-Zustand zurück.
+
+**Beispiel-Flow**  
+- ChatGPT: „Öffne Codespace → Terminal → führe diesen Befehl aus …“  
+- Owner: führt aus, meldet Ergebnis.  
+- ChatGPT: interpretiert Log, leitet nächsten Schritt an.
+
+**Ziel**  
+Kompetenz im Systemaufbau stärken – ohne technische Überforderung.
