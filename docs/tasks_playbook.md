@@ -60,6 +60,26 @@ python artefacts/tasks_cli.py list --open --blocking --now 2025-11-06T09:00:00Z 
 - **QA-Workflow**: `.github/workflows/tasks_cli_qa.yml` führt Smoke-Tests aus (Dry-Run-Unveränderlichkeit, Plan/Complete Grundpfade).
 - **Deterministisch**: Alle Beispiele verwenden `--now` (ISO-8601, UTC bevorzugt).
 
+## Make Quick Actions
+Für häufige Aufgaben stehen Make-Targets zur Verfügung (automatisch `DRY_RUN=true`).
+
+```bash
+# Offene Blocker anzeigen
+make tasks-list NOW=$(date -u +%FT%TZ)
+
+# Task abschließen + Evidence verlinken (automatische Planung aktiv)
+make task-complete ID=T-2025-10-24-01 EVIDENCE=docs/health_reports/2025-11-06_health_report.md DRY_RUN=false
+
+# Task um 3 Tage verschieben
+make task-snooze ID=T-2025-10-24-03 DAYS=3 DRY_RUN=false
+```
+
+### Hinweise
+- Standardmäßig läuft alles im **Dry-Run** (sicherer Testmodus).
+- `NOW` (ISO-8601) kann für deterministische Zeitstempel angegeben werden.
+- Auf Windows bitte Git Bash oder WSL verwenden.
+- Diese Targets nutzen exakt die CLI; keine zusätzliche Logik.
+
 ## Beispiele
 - Health Report (recurring, 14d): Nach Erzeugung Report-Datei als `evidence` verlinken
 - Lessons Entry (one_time): Markdown unter `docs/lessons/` ablegen
