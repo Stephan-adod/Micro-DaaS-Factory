@@ -23,6 +23,21 @@ Transparente, CI-überwachte To-Do-Liste für wiederkehrende und einmalige Owner
      - `evidence_required` aber **keine Evidence**
 6. **Tipps**: IDs fortlaufend, `priority` nutzen (P0=kritisch), kleine Einheiten bevorzugen
 
+## CLI – schnelle Bedienung
+```bash
+# Liste offene Blocker (kompakt)
+python artefacts/tasks_cli.py list --open --blocking
+# Task abschließen + Report als Evidence verlinken, Next-Due automatisch planen
+python artefacts/tasks_cli.py complete T-2025-10-24-01 --evidence docs/health_reports/2025-11-06_health_report.md
+# Task 3 Tage snoozen
+python artefacts/tasks_cli.py snooze T-2025-10-24-03 --days 3
+# Next-Due explizit setzen (Datum/Zeit)
+python artefacts/tasks_cli.py plan T-2025-10-24-01 --until 2025-11-20T09:00:00Z
+# Deterministisch testen (ohne Writeback)
+python artefacts/tasks_cli.py list --open --blocking --now 2025-11-06T09:00:00Z --dry-run
+```
+**Hinweis:** `rrule` (falls genutzt) wird bevorzugt; sonst `interval_days`.
+
 ## Beispiele
 - Health Report (recurring, 14d): Nach Erzeugung Report-Datei als `evidence` verlinken
 - Lessons Entry (one_time): Markdown unter `docs/lessons/` ablegen
