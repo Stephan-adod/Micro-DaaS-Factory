@@ -1,0 +1,32 @@
+name: Canonical Guard
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check canonical files exist
+        run: |
+          test -f meta/AI_First_Handbook.md
+          test -f meta/Human_in_the_Loop_Playbook.md
+          test -f meta/system_index.json
+      - name: No rogue canonicals in /docs (strict filenames)
+        run: |
+          # only block if canonical filenames themselves appear under /docs
+          for f in "docs/AI_First_Handbook.md" "docs/Human_in_the_Loop_Playbook.md"; do
+            if [ -f "$f" ]; then
+              echo "::error::Canonical file must live in /meta: $f"; exit 1;
+            fi
+          done
+          exit 0
+      - name: Tasks doc has canonical banner
+        run: |
+          # match the exact banner line, including blockquote and bold markers
+          grep -Eq '^> \*\*Canonical Source:\*\* `meta/Human_in_the_Loop_Playbook\.md`' docs/tasks_playbook.md
+      - name: Index lists canonicals
+        run: |
+          grep -q "AI_First_Handbook.md" meta/system_index.json
+          grep -q "Human_in_the_Loop_Playbook.md" meta/system_index.json

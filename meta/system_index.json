@@ -1,0 +1,10 @@
+{
+  "version": "v3.1",
+  "canonicals": [
+    { "path": "meta/AI_First_Handbook.md", "title": "AI First Handbook", "type": "handbook" },
+    { "path": "meta/Human_in_the_Loop_Playbook.md", "title": "Human-in-the-Loop Playbook", "type": "playbook" }
+  ],
+  "operational_docs": [
+    { "path": "docs/tasks_playbook.md", "title": "Tasks – Operational How-To", "type": "howto" }
+  ]
+}
