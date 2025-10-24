@@ -3,20 +3,27 @@
   "owner": "stephan-adod",
   "tasks": [
     {
-      "id": "T-2025-10-24-01",
-      "title": "Review Health Report #1",
+      "id": "T-2025-10-24-03",
+      "title": "Approve Phase 3 Roadmap",
       "phase": "Stabilization",
-      "type": "recurring",
+      "type": "one_time",
       "blocking": true,
-      "status": "open",
+      "status": "done",
+      "priority": "P0",
+      "depends_on": [
+        "T-2025-10-24-04"
+      ],
       "created_at": "2025-10-24T09:00:00Z",
-      "due": "2025-11-06T09:00:00Z",
-      "interval_days": 14,
-      "last_run": null,
-      "next_due": "2025-11-06T09:00:00Z",
+      "due": "2025-10-29T12:00:00Z",
       "owner": "stephan-adod",
-      "evidence": ["docs/health_reports/2025-11-06_health_report.md"],
-      "tags": ["loop-b","report","phase3"]
+      "evidence_required": true,
+      "evidence": [
+        "docs/phase3_operational_plan.md"
+      ],
+      "tags": [
+        "phase3",
+        "roadmap"
+      ]
     },
     {
       "id": "T-2025-10-24-02",
@@ -28,24 +35,37 @@
       "created_at": "2025-10-24T09:00:00Z",
       "due": "2025-10-28T17:00:00Z",
       "owner": "stephan-adod",
-      "evidence": ["docs/lessons/2025-10-28_phase3_lesson_01.md"],
-      "tags": ["lessons","loop-b","phase3"]
+      "evidence": [
+        "docs/lessons/2025-10-28_phase3_lesson_01.md"
+      ],
+      "tags": [
+        "lessons",
+        "loop-b",
+        "phase3"
+      ]
     },
     {
-      "id": "T-2025-10-24-03",
-      "title": "Approve Phase 3 Roadmap",
+      "id": "T-2025-10-24-01",
+      "title": "Review Health Report #1",
       "phase": "Stabilization",
-      "type": "one_time",
+      "type": "recurring",
       "blocking": true,
       "status": "done",
-      "priority": "P0",
-      "depends_on": ["T-2025-10-24-04"],
       "created_at": "2025-10-24T09:00:00Z",
-      "due": "2025-10-29T12:00:00Z",
+      "due": "2025-11-06T09:00:00Z",
+      "interval_days": 14,
+      "last_run": "2025-10-24T18:19:36.037804Z",
+      "next_due": "2025-11-06T09:00:00Z",
       "owner": "stephan-adod",
-      "evidence_required": true,
-      "evidence": ["docs/phase3_operational_plan.md"],
-      "tags": ["phase3","roadmap"]
+      "evidence": [
+        "docs/health_reports/2025-11-06_health_report.md",
+        "docs/lessons/2025-11-04_health_review_1.md"
+      ],
+      "tags": [
+        "loop-b",
+        "report",
+        "phase3"
+      ]
     },
     {
       "id": "T-2025-10-24-04",
@@ -58,8 +78,14 @@
       "due": "2025-11-07T09:00:00Z",
       "owner": "stephan-adod",
       "evidence_required": true,
-      "evidence": ["docs/lessons/2025-11-07_phase3_cycle1_review.md"],
-      "tags": ["phase3","review","cycle1"]
+      "evidence": [
+        "docs/lessons/2025-11-07_phase3_cycle1_review.md"
+      ],
+      "tags": [
+        "phase3",
+        "review",
+        "cycle1"
+      ]
     },
     {
       "id": "T-2025-11-08-01",
@@ -72,8 +98,14 @@
       "due": "2025-11-21T09:00:00Z",
       "owner": "stephan-adod",
       "evidence_required": true,
-      "evidence": ["docs/lessons/2025-11-21_phase3_cycle2_review.md"],
-      "tags": ["phase3","review","cycle2"]
+      "evidence": [
+        "docs/lessons/2025-11-21_phase3_cycle2_review.md"
+      ],
+      "tags": [
+        "phase3",
+        "review",
+        "cycle2"
+      ]
     }
   ]
 }
