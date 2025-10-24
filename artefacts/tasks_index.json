@@ -43,6 +43,20 @@
       "owner": "stephan-adod",
       "evidence": ["docs/roadmap/phase3_cycle_01.md"],
       "tags": ["roadmap","owner","phase3"]
+    },
+    {
+      "id": "T-2025-10-24-04",
+      "title": "Cycle 1 Review Preparation",
+      "phase": "Stabilization",
+      "type": "one_time",
+      "blocking": true,
+      "status": "done",
+      "created_at": "2025-10-24T09:30:00Z",
+      "due": "2025-11-07T09:00:00Z",
+      "owner": "stephan-adod",
+      "evidence_required": true,
+      "evidence": ["docs/lessons/2025-11-07_phase3_cycle1_review.md"],
+      "tags": ["phase3","review","cycle1"]
     }
   ]
 }
