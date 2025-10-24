@@ -1,0 +1,48 @@
+{
+  "version": "v3.1",
+  "owner": "stephan-adod",
+  "tasks": [
+    {
+      "id": "T-2025-10-24-01",
+      "title": "Review Health Report #1",
+      "phase": "Stabilization",
+      "type": "recurring",
+      "blocking": true,
+      "status": "open",
+      "created_at": "2025-10-24T09:00:00Z",
+      "due": "2025-11-06T09:00:00Z",
+      "interval_days": 14,
+      "last_run": null,
+      "next_due": "2025-11-06T09:00:00Z",
+      "owner": "stephan-adod",
+      "evidence": ["docs/health_reports/2025-11-06_health_report.md"],
+      "tags": ["loop-b","report","phase3"]
+    },
+    {
+      "id": "T-2025-10-24-02",
+      "title": "Write Lessons Loop B #1",
+      "phase": "Stabilization",
+      "type": "one_time",
+      "blocking": true,
+      "status": "open",
+      "created_at": "2025-10-24T09:00:00Z",
+      "due": "2025-10-28T17:00:00Z",
+      "owner": "stephan-adod",
+      "evidence": ["docs/lessons/2025-10-28_phase3_lesson_01.md"],
+      "tags": ["lessons","loop-b","phase3"]
+    },
+    {
+      "id": "T-2025-10-24-03",
+      "title": "Approve Phase 3 Roadmap (next 14d)",
+      "phase": "Stabilization",
+      "type": "one_time",
+      "blocking": true,
+      "status": "open",
+      "created_at": "2025-10-24T09:00:00Z",
+      "due": "2025-10-29T12:00:00Z",
+      "owner": "stephan-adod",
+      "evidence": ["docs/roadmap/phase3_cycle_01.md"],
+      "tags": ["roadmap","owner","phase3"]
+    }
+  ]
+}
