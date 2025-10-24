@@ -3,40 +3,62 @@
 ## Ziel
 Transparente, CI-überwachte To-Do-Liste für wiederkehrende und einmalige Owner-Aufgaben.
 
+## Prozessübersicht (E2E)
+1. **Planen**: Task anlegen (ID, title, phase, owner, blocking, priority, depends_on, due/interval/rrule)
+2. **Arbeiten**: Status `open → in_progress` (optional)
+3. **Abschließen**: `done` + (falls `evidence_required`) Nachweis in `evidence` verlinken
+4. **Wiederauftakten (recurring)**: `interval_days` **oder** `rrule` → `next_due` planen
+5. **CI-Kontrolle**: PR = Soft Mode (nur Info), main/schedule/dispatch = **blockierend**
+6. **Review**: 14-Tage Rhythmus; Lessons & Health Report referenzieren
+
+## Definition of Done (DoD)
+- [ ] `status: done`
+- [ ] Abhängigkeiten (`depends_on`) sind `done|skipped`
+- [ ] Falls `evidence_required: true` → mindestens **ein** Eintrag in `evidence`
+- [ ] Für `recurring`: `next_due` gesetzt (entweder aus `interval_days` oder `rrule` berechnet)
+
+## Rollen / RACI (Phase 3)
+- **Owner:** stephan-adod (entscheidet, priorisiert, bestätigt DoD)
+- **System (CI):** prüft Blocker/Dependencies/Evidence, erzwingt Policy auf **main**
+
 ## Felder (Kurz)
 - `type`: recurring|one_time
 - `blocking`: true -> Pipeline darf nicht weiter, bis erledigt
 - `status`: open|in_progress|done|skipped
 - `due`/`next_due`: Fälligkeit
 - `evidence`: Dateien/Links als Nachweis
+- `interval_days`/`rrule`: Recurrence-Quelle (bei Konflikt hat `rrule` Vorrang)
+- `priority`: P0 (kritisch) bis P3 (optional)
 
-## Workflow
+## Workflow-Details
 1. **Aufgabe anlegen/ändern** in `artefacts/tasks_index.json` (UTC/ISO-8601 mit `Z` oder Offset)
 2. **Abhängigkeiten** per `depends_on` pflegen; erst abschließen, wenn Vorgänger `done|skipped`
-3. **Erledigen** ⇒ `status: done` + (falls `evidence_required`) **Nachweis** in `evidence` verlinken
-4. **Recurring** ⇒ `interval_days` ODER `rrule` setzen; bei Abschluss Next-Due planen
-5. **CI prüft**:
-   - **PR (Soft Mode):** nur informativ, **kein Fail** bei offenen Blockern
-   - **main / schedule / workflow_dispatch:** **Fail**, wenn:
-     - offenen/überfälligen `blocking` Tasks
-     - **unmet dependencies**
-     - `evidence_required` aber **keine Evidence**
-6. **Tipps**: IDs fortlaufend, `priority` nutzen (P0=kritisch), kleine Einheiten bevorzugen
+3. **Erledigen** ⇒ Definition of Done prüfen; Nachweise (`evidence`) ergänzen
+4. **Recurring** ⇒ `interval_days` ODER `rrule` setzen; bei Abschluss `next_due` planen
+5. **CI prüft** blockierende Tasks, Dependencies und Evidence gemäß Policy (siehe oben)
+6. **Tipps**: IDs fortlaufend, kleine Einheiten bevorzugen, `priority` nutzen
 
-## CLI – schnelle Bedienung
+## CLI – Arbeitsabläufe
 ```bash
-# Liste offene Blocker (kompakt)
+# Übersicht: aktuell offene Blocker
 python artefacts/tasks_cli.py list --open --blocking
-# Task abschließen + Report als Evidence verlinken, Next-Due automatisch planen
-python artefacts/tasks_cli.py complete T-2025-10-24-01 --evidence docs/health_reports/2025-11-06_health_report.md
-# Task 3 Tage snoozen
-python artefacts/tasks_cli.py snooze T-2025-10-24-03 --days 3
-# Next-Due explizit setzen (Datum/Zeit)
-python artefacts/tasks_cli.py plan T-2025-10-24-01 --until 2025-11-20T09:00:00Z
-# Deterministisch testen (ohne Writeback)
+
+# Task abschließen + Evidence und (falls nötig) Next-Due automatisch planen
+python artefacts/tasks_cli.py complete T-YYYY-MM-DD-NN --evidence <PATH>
+
+# Snoozen (z.B. bis Datum)
+python artefacts/tasks_cli.py snooze T-YYYY-MM-DD-NN --until 2025-11-20T09:00:00Z
+
+# Planen (z.B. +14 Tage)
+python artefacts/tasks_cli.py plan T-YYYY-MM-DD-NN --days 14
+
+# Deterministische Smoke-Tests (ohne Writeback)
 python artefacts/tasks_cli.py list --open --blocking --now 2025-11-06T09:00:00Z --dry-run
 ```
-**Hinweis:** `rrule` (falls genutzt) wird bevorzugt; sonst `interval_days`.
+
+## Qualitätssicherung
+- **QA-Workflow**: `.github/workflows/tasks_cli_qa.yml` führt Smoke-Tests aus (Dry-Run-Unveränderlichkeit, Plan/Complete Grundpfade).
+- **Deterministisch**: Alle Beispiele verwenden `--now` (ISO-8601, UTC bevorzugt).
 
 ## Beispiele
 - Health Report (recurring, 14d): Nach Erzeugung Report-Datei als `evidence` verlinken
