@@ -1,0 +1,8 @@
+{
+  "cycle": 2,
+  "phase": "Stabilization",
+  "started": "2025-10-26",
+  "origin": "owner-decision",
+  "reason": "Baseline confirmed; self-pacing preferred",
+  "health_at_start": 0.551
+}
